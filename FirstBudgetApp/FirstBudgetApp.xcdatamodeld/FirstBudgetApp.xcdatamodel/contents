@@ -4,6 +4,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="TransactionItem" representedClassName="TransactionItem" syncable="YES">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="transactionDescription" optional="YES" attributeType="String"/>
     </entity>
 </model>

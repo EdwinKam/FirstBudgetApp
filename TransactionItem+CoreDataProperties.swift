@@ -17,6 +17,7 @@ extension TransactionItem {
     }
 
     @NSManaged public var transactionDescription: String?
+    @NSManaged public var amount: Double
 
 }
 

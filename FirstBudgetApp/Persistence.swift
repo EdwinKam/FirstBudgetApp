@@ -16,6 +16,7 @@ struct PersistenceController {
         for _ in 0..<10 {
             let newItem = TransactionItem(context: viewContext)
             newItem.transactionDescription = "sample description"
+            newItem.amount = 9014
         }
         do {
             try viewContext.save()
