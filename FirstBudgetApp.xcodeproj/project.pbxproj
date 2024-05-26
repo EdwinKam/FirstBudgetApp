@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4377DC102C03B57300B12B05 /* NewTransaction.swift */; };
 		43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */; };
 		43BC38932C031738009CF151 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38922C031738009CF151 /* ContentView.swift */; };
 		43BC38952C031738009CF151 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43BC38942C031738009CF151 /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4377DC102C03B57300B12B05 /* NewTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTransaction.swift; sourceTree = "<group>"; };
 		43BC388D2C031738009CF151 /* FirstBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirstBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstBudgetAppApp.swift; sourceTree = "<group>"; };
 		43BC38922C031738009CF151 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -75,6 +77,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4377DC0F2C03B53300B12B05 /* page */ = {
+			isa = PBXGroup;
+			children = (
+				43BC38922C031738009CF151 /* ContentView.swift */,
+				4377DC102C03B57300B12B05 /* NewTransaction.swift */,
+			);
+			path = page;
+			sourceTree = "<group>";
+		};
 		43BC38842C031738009CF151 = {
 			isa = PBXGroup;
 			children = (
@@ -98,8 +109,8 @@
 		43BC388F2C031738009CF151 /* FirstBudgetApp */ = {
 			isa = PBXGroup;
 			children = (
+				4377DC0F2C03B53300B12B05 /* page */,
 				43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */,
-				43BC38922C031738009CF151 /* ContentView.swift */,
 				43BC38942C031738009CF151 /* Assets.xcassets */,
 				43BC38992C031738009CF151 /* Persistence.swift */,
 				43BC389B2C031738009CF151 /* FirstBudgetApp.xcdatamodeld */,
@@ -265,6 +276,7 @@
 			files = (
 				43BC389A2C031738009CF151 /* Persistence.swift in Sources */,
 				43BC38932C031738009CF151 /* ContentView.swift in Sources */,
+				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,
 				43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */,
 				43BC389D2C031738009CF151 /* FirstBudgetApp.xcdatamodeld in Sources */,
 			);
