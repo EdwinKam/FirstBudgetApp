@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  NewTransaction.swift
 //  FirstBudgetApp
 //
 //  Created by Edwin Kam on 5/26/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+struct NewTransaction: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
@@ -84,3 +84,4 @@ private let itemFormatter: DateFormatter = {
 #Preview {
     ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
+
