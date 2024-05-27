@@ -44,7 +44,7 @@ struct NewTransaction: View {
                         Button(action: addItem) {
                             Text("Submit")
                                 .padding()
-                                .background(Color.blue)
+                                .background(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? Color.gray : Color.green)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
