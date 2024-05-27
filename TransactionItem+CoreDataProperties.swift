@@ -16,8 +16,9 @@ extension TransactionItem {
         return NSFetchRequest<TransactionItem>(entityName: "TransactionItem")
     }
 
-    @NSManaged public var transactionDescription: String?
     @NSManaged public var amount: Double
+    @NSManaged public var transactionDescription: String?
+    @NSManaged public var category: TransactionCategory?
 
 }
 

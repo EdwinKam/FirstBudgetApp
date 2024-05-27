@@ -11,45 +11,62 @@ import CoreData
 struct NewTransaction: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) private var presentationMode
+    @FetchRequest(
+        sortDescriptors: [],
+        animation: .default)
+    private var categories: FetchedResults<TransactionCategory>
 
-        @State private var transactionDescription: String = ""
-        @State private var amount: String = ""
+    @State private var transactionDescription: String = ""
+    @State private var amount: String = ""
+    @State private var selectedCategory: TransactionCategory?
 
-        var body: some View {
-            NavigationView {
-                VStack {
-                    Form {
-                        Section(header: Text("New Transaction")) {
-                            TextField("Description", text: $transactionDescription)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            TextField("Amount", text: $amount)
-                                .keyboardType(.decimalPad)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            Button(action: addItem) {
-                                Text("Submit")
-                                    .padding()
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(8)
-                            }
+    var body: some View {
+        NavigationView {
+            VStack {
+                Form {
+                    Section(header: Text("New Transaction")) {
+                        TextField("Description", text: $transactionDescription)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        TextField("Amount", text: $amount)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        Picker("Select Category", selection: $selectedCategory) {
+                                                    ForEach(categories) { category in
+                                                        Text(category.name ?? "Empty name").tag(category as TransactionCategory?)
+                                                    }
+                                                }
+                        Button(action: addItem) {
+                            Text("Submit")
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
                         }
+                        .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
                     }
-                    .padding()
-                    
-                }}}
+                }
+                .padding()
+                
+            }}}
 
     private func addItem() {
-            guard let amountValue = Double(amount), !transactionDescription.isEmpty else { return }
+            guard let amountValue = Double(amount),
+                  !transactionDescription.isEmpty,
+                  let category = selectedCategory else {
+                return
+            }
 
             withAnimation {
                 let newItem = TransactionItem(context: viewContext)
                 newItem.transactionDescription = transactionDescription
                 newItem.amount = amountValue
+                newItem.category = category
 
                 do {
                     try viewContext.save()
                     transactionDescription = ""  // Clear the input fields after saving
                     amount = ""
+                    selectedCategory = nil
                     print("Item added successfully")
                     presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
                 } catch {
