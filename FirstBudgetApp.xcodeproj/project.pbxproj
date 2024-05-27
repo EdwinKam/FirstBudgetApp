@@ -21,6 +21,7 @@
 		43CCB1DE2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DA2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift */; };
 		43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */; };
 		43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */; };
+		43FA4A882C0470C90024E956 /* NewCategoryPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		43CCB1DA2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataClass.swift"; sourceTree = "<group>"; };
 		43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCategoryPopup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 			children = (
 				43BC38922C031738009CF151 /* ContentView.swift */,
 				4377DC102C03B57300B12B05 /* NewTransaction.swift */,
+				43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */,
 			);
 			path = page;
 			sourceTree = "<group>";
@@ -289,6 +292,7 @@
 				43BC389A2C031738009CF151 /* Persistence.swift in Sources */,
 				43BC38932C031738009CF151 /* ContentView.swift in Sources */,
 				43CCB1DD2C0463ED00B62030 /* TransactionItem+CoreDataClass.swift in Sources */,
+				43FA4A882C0470C90024E956 /* NewCategoryPopup.swift in Sources */,
 				43CCB1DE2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */,
 				43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
