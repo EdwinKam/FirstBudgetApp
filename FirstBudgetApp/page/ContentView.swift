@@ -36,23 +36,7 @@ struct ContentView: View {
                         .frame(height: 300)
                         .padding()
                 }
-                List {
-                    ForEach(items) { item in
-                        HStack {
-                            Text("\(item.transactionDescription ?? "No Description")")
-                            Spacer()
-                            Text("\(item.amount, specifier: "%.2f")")
-                            Spacer()
-                            Text("\(item.category?.name ?? "No Category")")
-                        }
-                        .contentShape(Rectangle()) // Makes the entire HStack tappable
-                        .onTapGesture {
-                            selectedItem = item
-                            showEditPopup = true
-                        }
-                    }
-                    .onDelete(perform: deleteItems)
-                }
+                TransactionList(items: items)
             }
             .sheet(isPresented: $showEditPopup, onDismiss: {
                 selectedItem = nil
