@@ -1,14 +1,20 @@
 import SwiftUI
 import CoreData
+import Charts
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
         sortDescriptors: [],
-        animation: .default)
-    private var items: FetchedResults<TransactionItem>
+        animation: .default
+    ) private var items: FetchedResults<TransactionItem>
     
+    private var categoryTotals: [String: Double] {
+        Dictionary(grouping: items, by: { $0.category?.name ?? "No Category" })
+            .mapValues { $0.reduce(0) { $0 + $1.amount } }
+    }
+
     var body: some View {
         NavigationView {
             VStack {
@@ -17,6 +23,15 @@ struct ContentView: View {
                         .frame(width: 200, height: 40, alignment: .center)
                         .background(Color.green)
                         .cornerRadius(10)
+                }
+                if !categoryTotals.isEmpty {
+                    PieChartView(categoryTotals: categoryTotals)
+                        .frame(height: 300)
+                        .padding()
+                } else {
+                    Text("No data to display")
+                        .frame(height: 300)
+                        .padding()
                 }
                 List {
                     ForEach(items) { item in
@@ -47,6 +62,34 @@ struct TransactionDetailView: View {
         }
         .navigationTitle("Transaction Details")
         .padding()
+    }
+}
+
+struct PieChartView: View {
+    let categoryTotals: [String: Double]
+    
+    var body: some View {
+        Chart {
+            ForEach(categoryTotals.sorted(by: { $0.key < $1.key }), id: \.key) { category, total in
+                SectorMark(
+                    angle: .value("Total", total),
+                    innerRadius: .ratio(0.5),
+                    outerRadius: .ratio(1.0)
+                )
+                .foregroundStyle(by: .value("Category", category))
+                .annotation(position: .overlay, alignment: .center) {
+                    VStack {
+                        Text(category)
+                            .font(.caption)
+                            .foregroundColor(.white)
+                        Text("\(total, specifier: "%.2f")")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+        }
+        .chartLegend(.visible)
     }
 }
 

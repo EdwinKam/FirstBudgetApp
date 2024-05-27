@@ -24,7 +24,7 @@ struct PersistenceController {
         }
 
         // Associate each TransactionItem with a valid category
-        for i in 0..<10 {
+        for i in 0..<2 {
             let newItem = TransactionItem(context: viewContext)
             newItem.transactionDescription = "sample description \(i)"
             newItem.amount = 9014
