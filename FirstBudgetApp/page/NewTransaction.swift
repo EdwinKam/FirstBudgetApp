@@ -25,7 +25,7 @@ struct NewTransaction: View {
                         TextField("Amount", text: $amount)
                             .keyboardType(.decimalPad)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                        
+
                         Text("Select Category")
                         LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 4), spacing: 16) {
                             ForEach(categories) { category in
@@ -40,7 +40,7 @@ struct NewTransaction: View {
                                 }
                         }
                         .padding(.vertical)
-                        
+
                         Button(action: addItem) {
                             Text("Submit")
                                 .padding()
@@ -56,6 +56,10 @@ struct NewTransaction: View {
                     NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategoryName: $newCategoryName) {
                         addCategory(name: newCategoryName)
                     }
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(Color.white)
+                    .presentationCornerRadius(30)
                 }
             }
             .navigationTitle("New Transaction")
@@ -96,6 +100,7 @@ struct NewTransaction: View {
         newCategory.id = UUID()
         do {
             try viewContext.save()
+            selectedCategory = newCategory  // Select the newly added category
             print("Category added successfully")
         } catch {
             let nsError = error as NSError
@@ -104,6 +109,7 @@ struct NewTransaction: View {
         }
     }
 }
+
 
 struct CategoryCircleView: View {
     var category: TransactionCategory
