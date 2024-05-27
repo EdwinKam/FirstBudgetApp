@@ -17,10 +17,10 @@
 		43BC38A72C031739009CF151 /* FirstBudgetAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38A62C031739009CF151 /* FirstBudgetAppTests.swift */; };
 		43BC38B12C031739009CF151 /* FirstBudgetAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38B02C031739009CF151 /* FirstBudgetAppUITests.swift */; };
 		43BC38B32C031739009CF151 /* FirstBudgetAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38B22C031739009CF151 /* FirstBudgetAppUITestsLaunchTests.swift */; };
-		43CCB1BD2C03F2CD00B62030 /* TransactionItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1B92C03F2CD00B62030 /* TransactionItem+CoreDataClass.swift */; };
-		43CCB1BE2C03F2CD00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1BA2C03F2CD00B62030 /* TransactionItem+CoreDataProperties.swift */; };
-		43CCB1BF2C03F2CD00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1BB2C03F2CD00B62030 /* TransactionCategory+CoreDataClass.swift */; };
-		43CCB1C02C03F2CD00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1BC2C03F2CD00B62030 /* TransactionCategory+CoreDataProperties.swift */; };
+		43CCB1DD2C0463ED00B62030 /* TransactionItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1D92C0463ED00B62030 /* TransactionItem+CoreDataClass.swift */; };
+		43CCB1DE2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DA2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift */; };
+		43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */; };
+		43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,10 +54,10 @@
 		43BC38AC2C031739009CF151 /* FirstBudgetAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FirstBudgetAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		43BC38B02C031739009CF151 /* FirstBudgetAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstBudgetAppUITests.swift; sourceTree = "<group>"; };
 		43BC38B22C031739009CF151 /* FirstBudgetAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstBudgetAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		43CCB1B92C03F2CD00B62030 /* TransactionItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionItem+CoreDataClass.swift"; sourceTree = "<group>"; };
-		43CCB1BA2C03F2CD00B62030 /* TransactionItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		43CCB1BB2C03F2CD00B62030 /* TransactionCategory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataClass.swift"; sourceTree = "<group>"; };
-		43CCB1BC2C03F2CD00B62030 /* TransactionCategory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		43CCB1D92C0463ED00B62030 /* TransactionItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionItem+CoreDataClass.swift"; sourceTree = "<group>"; };
+		43CCB1DA2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataClass.swift"; sourceTree = "<group>"; };
+		43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,10 +97,10 @@
 		43BC38842C031738009CF151 = {
 			isa = PBXGroup;
 			children = (
-				43CCB1B92C03F2CD00B62030 /* TransactionItem+CoreDataClass.swift */,
-				43CCB1BA2C03F2CD00B62030 /* TransactionItem+CoreDataProperties.swift */,
-				43CCB1BB2C03F2CD00B62030 /* TransactionCategory+CoreDataClass.swift */,
-				43CCB1BC2C03F2CD00B62030 /* TransactionCategory+CoreDataProperties.swift */,
+				43CCB1D92C0463ED00B62030 /* TransactionItem+CoreDataClass.swift */,
+				43CCB1DA2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift */,
+				43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */,
+				43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */,
 				43BC388F2C031738009CF151 /* FirstBudgetApp */,
 				43BC38A52C031739009CF151 /* FirstBudgetAppTests */,
 				43BC38AF2C031739009CF151 /* FirstBudgetAppUITests */,
@@ -288,10 +288,10 @@
 			files = (
 				43BC389A2C031738009CF151 /* Persistence.swift in Sources */,
 				43BC38932C031738009CF151 /* ContentView.swift in Sources */,
-				43CCB1BD2C03F2CD00B62030 /* TransactionItem+CoreDataClass.swift in Sources */,
-				43CCB1BE2C03F2CD00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */,
-				43CCB1BF2C03F2CD00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
-				43CCB1C02C03F2CD00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
+				43CCB1DD2C0463ED00B62030 /* TransactionItem+CoreDataClass.swift in Sources */,
+				43CCB1DE2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */,
+				43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
+				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,
 				43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */,
 				43BC389D2C031738009CF151 /* FirstBudgetApp.xcdatamodeld in Sources */,
@@ -458,6 +458,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FirstBudgetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 9NR899Q2T3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -486,6 +487,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FirstBudgetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 9NR899Q2T3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

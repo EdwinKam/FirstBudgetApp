@@ -14,28 +14,28 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         let defaultCategories = ["work", "home", "electric", "hobby"]
-                var categories = [TransactionCategory]()
-                for categoryName in defaultCategories {
-                    let newCategory = TransactionCategory(context: viewContext)
-                    newCategory.id = UUID()
-                    newCategory.name = categoryName
-                    categories.append(newCategory)
-                }
+        var categories = [TransactionCategory]()
+        
+        for categoryName in defaultCategories {
+            let newCategory = TransactionCategory(context: viewContext)
+            newCategory.id = UUID()
+            newCategory.name = categoryName
+            categories.append(newCategory)
+        }
 
-                // Associate each TransactionItem with a valid category
-                for i in 0..<10 {
-                    let newItem = TransactionItem(context: viewContext)
-                    newItem.transactionDescription = "sample description \(i)"
-                    newItem.amount = 9014
-                    if let category = categories.randomElement() {
-                        newItem.categoryId = category.id
-                    }
-                }
+        // Associate each TransactionItem with a valid category
+        for i in 0..<10 {
+            let newItem = TransactionItem(context: viewContext)
+            newItem.transactionDescription = "sample description \(i)"
+            newItem.amount = 9014
+            if let category = categories.randomElement() {
+                newItem.category = category
+            }
+        }
+
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }

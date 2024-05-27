@@ -6,11 +6,11 @@
     <entity name="TransactionCategory" representedClassName="TransactionCategory" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
+        <relationship name="transactions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TransactionItem" inverseName="category" inverseEntity="TransactionItem"/>
     </entity>
     <entity name="TransactionItem" representedClassName="TransactionItem" syncable="YES">
         <attribute name="amount" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="categoryId" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="transactionDescription" attributeType="String"/>
-        <relationship name="category" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TransactionCategory"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TransactionCategory" inverseName="transactions" inverseEntity="TransactionCategory"/>
     </entity>
 </model>

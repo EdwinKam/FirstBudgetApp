@@ -60,7 +60,7 @@ struct NewTransaction: View {
                 let newItem = TransactionItem(context: viewContext)
                 newItem.transactionDescription = transactionDescription
                 newItem.amount = amountValue
-                newItem.categoryId = category.id  // Assuming there's a categoryId attribute in Core Data model
+                newItem.category = category
 
                 do {
                     try viewContext.save()

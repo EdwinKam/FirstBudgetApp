@@ -18,25 +18,7 @@ extension TransactionItem {
 
     @NSManaged public var amount: Double
     @NSManaged public var transactionDescription: String?
-    @NSManaged public var categoryId: UUID?
-    @NSManaged public var category: NSSet?
-
-}
-
-// MARK: Generated accessors for category
-extension TransactionItem {
-
-    @objc(addCategoryObject:)
-    @NSManaged public func addToCategory(_ value: TransactionCategory)
-
-    @objc(removeCategoryObject:)
-    @NSManaged public func removeFromCategory(_ value: TransactionCategory)
-
-    @objc(addCategory:)
-    @NSManaged public func addToCategory(_ values: NSSet)
-
-    @objc(removeCategory:)
-    @NSManaged public func removeFromCategory(_ values: NSSet)
+    @NSManaged public var category: TransactionCategory?
 
 }
 
