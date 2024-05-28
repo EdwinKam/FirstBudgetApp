@@ -11,7 +11,7 @@ struct NewTransaction: View {
 
     @State private var transactionDescription: String = ""
     @State private var amount: String = ""
-    @State private var selectedCategory: TransactionCategory?
+    @State var selectedCategory: TransactionCategory?
     @State private var isPresentingCategoryPopup: Bool = false
     @State private var newCategoryName: String = ""
 
