@@ -36,9 +36,28 @@ struct PieChartView: View {
             .chartAngleSelection(value: $pieSelection)
             .frame(height: 300) // Ensure the frame is set to see the chart
             .onChange(of: pieSelection, initial: false) { oldValue, newValue in
-                if let oldValue {
-                    print(oldValue)
+                if let oldValue = oldValue {
+                    if let selectedCategory = determineSelectedCategory(from: oldValue) {
+                        print("Selected Category: \(selectedCategory)")
+                    }
+                }
+                print("clicked")
+            }
+        }
+    
+    private func determineSelectedCategory(from oldValue: Double?) -> String? {
+            guard let oldValue = oldValue else { return nil }
+
+            // Find the category that corresponds to the oldValue
+            let sortedTotals = categoryTotals.sorted { $0.key < $1.key }
+            var accumulatedAngle: Double = 0
+
+            for (category, total) in sortedTotals {
+                accumulatedAngle += total
+                if oldValue <= accumulatedAngle {
+                    return category
                 }
             }
+            return nil
         }
 }
