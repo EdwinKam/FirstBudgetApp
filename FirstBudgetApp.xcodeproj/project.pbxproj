@@ -22,6 +22,8 @@
 		43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */; };
 		43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */; };
 		43D8E2782C047D60005AE92F /* TransactionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8E2772C047D60005AE92F /* TransactionList.swift */; };
+		43D8E27B2C055A58005AE92F /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8E27A2C055A58005AE92F /* PieChartView.swift */; };
+		43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */; };
 		43FA4A882C0470C90024E956 /* NewCategoryPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +63,8 @@
 		43CCB1DB2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataClass.swift"; sourceTree = "<group>"; };
 		43CCB1DC2C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCategory+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		43D8E2772C047D60005AE92F /* TransactionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionList.swift; sourceTree = "<group>"; };
+		43D8E27A2C055A58005AE92F /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
+		43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTransactionPopup.swift; sourceTree = "<group>"; };
 		43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCategoryPopup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,8 +98,6 @@
 			children = (
 				43BC38922C031738009CF151 /* ContentView.swift */,
 				4377DC102C03B57300B12B05 /* NewTransaction.swift */,
-				43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */,
-				43D8E2772C047D60005AE92F /* TransactionList.swift */,
 			);
 			path = page;
 			sourceTree = "<group>";
@@ -127,6 +129,7 @@
 		43BC388F2C031738009CF151 /* FirstBudgetApp */ = {
 			isa = PBXGroup;
 			children = (
+				43D8E2792C055A3B005AE92F /* component */,
 				4377DC0F2C03B53300B12B05 /* page */,
 				43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */,
 				43BC38942C031738009CF151 /* Assets.xcassets */,
@@ -160,6 +163,17 @@
 				43BC38B22C031739009CF151 /* FirstBudgetAppUITestsLaunchTests.swift */,
 			);
 			path = FirstBudgetAppUITests;
+			sourceTree = "<group>";
+		};
+		43D8E2792C055A3B005AE92F /* component */ = {
+			isa = PBXGroup;
+			children = (
+				43FA4A872C0470C90024E956 /* NewCategoryPopup.swift */,
+				43D8E2772C047D60005AE92F /* TransactionList.swift */,
+				43D8E27A2C055A58005AE92F /* PieChartView.swift */,
+				43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */,
+			);
+			path = component;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -300,7 +314,9 @@
 				43CCB1DE2C0463ED00B62030 /* TransactionItem+CoreDataProperties.swift in Sources */,
 				43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
+				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,
+				43D8E27B2C055A58005AE92F /* PieChartView.swift in Sources */,
 				43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */,
 				43BC389D2C031738009CF151 /* FirstBudgetApp.xcdatamodeld in Sources */,
 			);
