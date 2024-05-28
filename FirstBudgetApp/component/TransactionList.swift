@@ -11,11 +11,15 @@ struct TransactionList: View {
             List {
                 ForEach(filteredItems) { item in
                     HStack {
-                        Text("\(item.transactionDescription ?? "No Description")")
+                        VStack(alignment: .leading) {
+                            Text("\(item.transactionDescription ?? "No Description")")
+                            Text("\(item.category?.name ?? "No Category")")
+                                .foregroundColor(.gray)
+                                .font(.subheadline)
+                        }
                         Spacer()
                         Text("\(item.amount, specifier: "%.2f")")
-                        Spacer()
-                        Text("\(item.category?.name ?? "No Category")")
+                            .alignmentGuide(.trailing) { d in d[.trailing] }
                     }
                     .contentShape(Rectangle()) // Makes the entire HStack tappable
                     .onTapGesture {
