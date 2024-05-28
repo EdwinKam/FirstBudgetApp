@@ -24,14 +24,14 @@ struct ContentView: View {
                 }
                 
                 if !items.isEmpty {
-                    PieChartView(transactionItems: Array(items), selectedCategory: selectedCategory)
+                    PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
                         .frame(height: 300)
                         .padding()
                     
                     if let selectedCategory = selectedCategory {
                         HStack {
-                            Text("Selected Category: \(selectedCategory)")
-                                .padding()
+                            Text("Selected Category: \(selectedCategory.name ?? "Unknown")")
+                                                            .padding()
                             Button("Reset") {
                                 self.selectedCategory = nil
                             }
