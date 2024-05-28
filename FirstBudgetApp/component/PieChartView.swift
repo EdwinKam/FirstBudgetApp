@@ -5,6 +5,7 @@ struct PieChartView: View {
     let transactionItems: [TransactionItem]
     @Binding var selectedCategory: TransactionCategory? // Binding for selected category
     @State var pieSelection: Double?
+    @State var clickCount: Int = 0
 
     private static let chartColors: [Color] = [.red, .green, .blue, .orange, .purple]
 
@@ -17,8 +18,6 @@ struct PieChartView: View {
                 totals[category, default: 0.0] += item.amount
             }
         }
-        print("printing total")
-        print(totals)
         return totals
     }
 
@@ -42,10 +41,14 @@ struct PieChartView: View {
         .chartAngleSelection(value: $pieSelection)
         .frame(height: 300) // Ensure the frame is set to see the chart
         .onChange(of: pieSelection, initial: false) { oldValue, newValue in
-            if let oldAngle = oldValue {
-                if let selectedCategory = determineSelectedCategory(from: oldAngle) {
-                    print("Selected Category: \(selectedCategory.name ?? "Unknown")")
-                    self.selectedCategory = selectedCategory
+            clickCount += 1
+            print("Clicked \(clickCount)")
+            if let newValue {
+                withAnimation {
+                    if let selectedCategory = determineSelectedCategory(from: newValue) {
+                        print("Selected Category: \(selectedCategory.name ?? "Unknown")")
+                        self.selectedCategory = selectedCategory
+                    }
                 }
             }
         }
