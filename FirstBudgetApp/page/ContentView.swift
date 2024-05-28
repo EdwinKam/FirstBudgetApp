@@ -26,22 +26,7 @@ struct ContentView: View {
                 if !items.isEmpty {
                     PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
                         .frame(height: 300)
-                        .padding()
-                    
-                    if let selectedCategory = selectedCategory {
-                        HStack {
-                            Text("Selected Category: \(selectedCategory.name ?? "Unknown")")
-                                                            .padding()
-                            Button("Reset") {
-                                self.selectedCategory = nil
-                            }
-                            .padding()
-                            .background(Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                        }
-                    }
-                    
+                        .padding()                    
                     TransactionList(items: items, filteredByCategory: selectedCategory)
                 } else {
                     Text("No data to display")
