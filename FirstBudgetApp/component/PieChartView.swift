@@ -3,7 +3,8 @@ import Charts
 
 struct PieChartView: View {
     let transactionItems: [TransactionItem]
-    @Binding var selectedCategory: String? // Binding for selected category
+    @State var selectedCategory: TransactionCategory? // Binding for selected category
+    @State var pieSelection: Double?
 
     private static let chartColors: [Color] = [.red, .green, .blue, .orange, .purple]
 
@@ -15,45 +16,29 @@ struct PieChartView: View {
             let categoryName = item.category?.name ?? "Uncategorized"
             totals[categoryName, default: 0.0] += item.amount
         }
-        
+        print("printing total")
+        print(totals)
         return totals
     }
 
     var body: some View {
-        ZStack {
             Chart {
                 ForEach(categoryTotals.sorted(by: { $0.key < $1.key }), id: \.key) { category, total in
-                    let isSelected = selectedCategory == category
                     SectorMark(
                         angle: .value("Total", total),
-                        outerRadius: .ratio(isSelected ? 1 : 0.9),
-                        angularInset: isSelected ? 2 : 0
+                        outerRadius: 100, // Increased radius for better visibility
+                        angularInset: 2
                     )
                     .foregroundStyle(by: .value("Category", category))
                     .cornerRadius(3)
-                    .annotation(position: .overlay, alignment: .center) {
-                        VStack {
-                            Text(category)
-                                .font(.caption)
-                                .foregroundColor(isSelected ? .yellow : .white)
-                            Text("\(total, specifier: "%.2f")")
-                                .font(.caption2)
-                                .foregroundColor(isSelected ? .yellow : .white)
-                        }
-                    }
                 }
             }
-            .chartAngleSelection(value: $selectedCategory)
-            .chartForegroundStyleScale(domain: .automatic, range: Self.chartColors)
-            .onChange(of: selectedCategory) { newSelection in
-                if let newSelection = newSelection {
-                    print("Selected category: \(newSelection)")
-                } else {
-                    print("Selection cleared")
+            .chartAngleSelection(value: $pieSelection)
+            .frame(height: 300) // Ensure the frame is set to see the chart
+            .onChange(of: pieSelection, initial: false) { oldValue, newValue in
+                if let oldValue {
+                    print(oldValue)
                 }
             }
-            .frame(height: 300)
-            .animation(.bouncy, value: selectedCategory)
         }
-    }
 }

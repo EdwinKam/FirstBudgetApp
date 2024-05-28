@@ -11,7 +11,7 @@ struct ContentView: View {
     ) private var items: FetchedResults<TransactionItem>
     
     @State private var selectedItem: TransactionItem?
-    @State private var selectedCategory: String? // New state for selected category
+    @State private var selectedCategory: TransactionCategory? // New state for selected category
     
     var body: some View {
         NavigationView {
@@ -24,7 +24,7 @@ struct ContentView: View {
                 }
                 
                 if !items.isEmpty {
-                    PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
+                    PieChartView(transactionItems: Array(items), selectedCategory: selectedCategory)
                         .frame(height: 300)
                         .padding()
                     
@@ -42,7 +42,7 @@ struct ContentView: View {
                         }
                     }
                     
-                    TransactionList(items: items, filteredByCategory: selectedCategory(for: selectedCategory))
+                    TransactionList(items: items, filteredByCategory: selectedCategory)
                 } else {
                     Text("No data to display")
                         .frame(height: 300)
