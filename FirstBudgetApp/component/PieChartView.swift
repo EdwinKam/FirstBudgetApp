@@ -31,8 +31,8 @@ struct PieChartView: View {
             Chart {
                 ForEach(categoryTotals.sorted(by: { ($0.key.name ?? "") < ($1.key.name ?? "") }), id: \.key) { category, total in
                     let isSelected = selectedCategory == category
-                    let outerRadius = isSelected ? 110 : 100 // Change radius if selected
-                    let innerRadius = isSelected ? 40 : 50   // Change inner radius if selected
+                    let outerRadius = isSelected ? 160 : 140 // Change radius if selected
+                    let innerRadius = isSelected ? 90 : 80   // Change inner radius if selected
                     
                     SectorMark(
                         angle: .value("Total", total),
@@ -42,9 +42,16 @@ struct PieChartView: View {
                     )
                     .foregroundStyle(by: .value("Category", category.name ?? "Unknown"))
                     .cornerRadius(3)
+                    .annotation(position: .overlay, alignment: .center) {
+                        Text(category.name ?? "Unknown")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .rotationEffect(.degrees(0)) // Rotate to align with the sector
+                    }
                 }
             }
             .chartAngleSelection(value: $pieSelection)
+            .chartLegend(.hidden)
             .frame(height: 300) // Ensure the frame is set to see the chart
             .onChange(of: pieSelection, initial: false) { oldValue, newValue in
                 clickCount += 1
@@ -72,14 +79,17 @@ struct PieChartView: View {
                         .font(.headline)
                         .foregroundColor(.gray)
                     Text("\(total, specifier: "%.2f")")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .font(.title)
+                        .fontWeight(.semibold)
                 } else {
                     Text("\(totalAmount, specifier: "%.2f")")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .font(.title)
+                        .fontWeight(.semibold)
                 }
             }
+            .padding()
+            .background(Color.white.opacity(0.7))
+            .cornerRadius(10)
         }
     }
     
