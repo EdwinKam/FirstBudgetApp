@@ -1,15 +1,8 @@
-//
-//  EditTransactionPopup.swift
-//  FirstBudgetApp
-//
-//  Created by Edwin Kam on 5/27/24.
-//
-
 import SwiftUI
 
 struct EditTransactionPopup: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var isPresented: Bool
+    @Environment(\.presentationMode) var presentationMode
     var transaction: TransactionItem
 
     var body: some View {
@@ -33,7 +26,7 @@ struct EditTransactionPopup: View {
             .padding(.top, 16)
             
             Button(action: {
-                isPresented = false
+                presentationMode.wrappedValue.dismiss()
             }) {
                 Text("Close")
                     .padding()
@@ -52,7 +45,7 @@ struct EditTransactionPopup: View {
             viewContext.delete(transaction)
             do {
                 try viewContext.save()
-                isPresented = false
+                presentationMode.wrappedValue.dismiss()
             } catch {
                 let nsError = error as NSError
                 print("Unresolved error \(nsError), \(nsError.userInfo)")

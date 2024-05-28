@@ -31,22 +31,11 @@ struct ContentView: View {
                     PieChartView(categoryTotals: categoryTotals)
                         .frame(height: 300)
                         .padding()
+                    TransactionList(items: items)
                 } else {
                     Text("No data to display")
                         .frame(height: 300)
                         .padding()
-                }
-                TransactionList(items: items)
-            }
-            .sheet(isPresented: $showEditPopup, onDismiss: {
-                selectedItem = nil
-            }) {
-                if let selectedItem = selectedItem {
-                    EditTransactionPopup(isPresented: $showEditPopup, transaction: selectedItem)
-                        .presentationDetents([.medium, .large])
-                        .presentationDragIndicator(.visible)
-                        .presentationBackground(Color.white)
-                        .presentationCornerRadius(30) // Apply rounded corners directly to the sheet
                 }
             }
         }
