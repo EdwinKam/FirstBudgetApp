@@ -2,7 +2,7 @@
 //  TransactionItem+CoreDataProperties.swift
 //  FirstBudgetApp
 //
-//  Created by Edwin Kam on 5/26/24.
+//  Created by Edwin Kam on 5/27/24.
 //
 //
 
@@ -18,7 +18,18 @@ extension TransactionItem {
 
     @NSManaged public var amount: Double
     @NSManaged public var transactionDescription: String?
+    @NSManaged public var createdAt: Date?
     @NSManaged public var category: TransactionCategory?
+    
+    override public func willSave() {
+        super.willSave()
+        
+        let now = Date()
+        
+        if self.createdAt == nil {
+            self.createdAt = now
+        }
+    }
 
 }
 
