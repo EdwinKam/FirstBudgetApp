@@ -80,16 +80,18 @@ struct ContentView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             NavigationLink(destination: NewTransaction()) {
                                 Text("Add New Transaction")
-                                    .frame(width: 120, height: 40)
-                                    .background(Color.blue)
+                                    .padding()
+                                    .frame(minWidth: 150)
+                                    .background(Color.gray)
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
                             }
                             ForEach(top2Categories, id: \.self) { category in
                                 NavigationLink(destination: NewTransaction(selectedCategory: category)) {
                                     Text(category.name ?? "Unknown")
-                                        .frame(width: 120, height: 40)
-                                        .background(Color.blue)
+                                        .padding()
+                                        .frame(minWidth: 150)
+                                        .background(Color.gray)
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
                                 }

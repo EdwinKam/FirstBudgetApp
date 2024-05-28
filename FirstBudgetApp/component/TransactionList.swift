@@ -24,7 +24,7 @@ struct TransactionList: View {
                         }
                         .padding() // Add padding inside each item
                         .background(
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 30)
                                 .foregroundColor(Color(.systemGreen).opacity(0.2)) // Light green background
                                 .shadow(radius: 3)
                         )
