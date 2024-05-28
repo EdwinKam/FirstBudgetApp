@@ -11,13 +11,8 @@ struct ContentView: View {
     ) private var items: FetchedResults<TransactionItem>
     
     @State private var selectedItem: TransactionItem?
-    @State private var showEditPopup: Bool = false
-
-    private var categoryTotals: [String: Double] {
-        Dictionary(grouping: items, by: { $0.category?.name ?? "No Category" })
-            .mapValues { $0.reduce(0) { $0 + $1.amount } }
-    }
-
+    @State private var selectedCategory: String? // New state for selected category
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -27,11 +22,27 @@ struct ContentView: View {
                         .background(Color.green)
                         .cornerRadius(10)
                 }
-                if !categoryTotals.isEmpty {
-                    PieChartView(categoryTotals: categoryTotals)
+                
+                if !items.isEmpty {
+                    PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
                         .frame(height: 300)
                         .padding()
-                    TransactionList(items: items)
+                    
+                    if let selectedCategory = selectedCategory {
+                        HStack {
+                            Text("Selected Category: \(selectedCategory)")
+                                .padding()
+                            Button("Reset") {
+                                self.selectedCategory = nil
+                            }
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+                    }
+                    
+                    TransactionList(items: items, filteredByCategory: selectedCategory(for: selectedCategory))
                 } else {
                     Text("No data to display")
                         .frame(height: 300)
@@ -39,6 +50,11 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    private func selectedCategory(for name: String?) -> TransactionCategory? {
+        guard let name = name else { return nil }
+        return items.first(where: { $0.category?.name == name })?.category
     }
 }
 
