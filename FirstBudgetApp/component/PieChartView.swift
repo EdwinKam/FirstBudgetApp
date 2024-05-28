@@ -25,8 +25,14 @@ struct PieChartView: View {
     var body: some View {
         Chart {
             ForEach(categoryTotals.sorted(by: { ($0.key.name ?? "") < ($1.key.name ?? "") }), id: \.key) { category, total in
+                let isSelected = selectedCategory == category
+                let outerRadius = isSelected ? 110 : 100 // Change radius if selected
+                let innerRadius = isSelected ? 40 : 50   // Change inner radius if selected
+                
                 SectorMark(
                     angle: .value("Total", total),
+                    innerRadius: MarkDimension(integerLiteral: innerRadius),
+                    outerRadius: MarkDimension(integerLiteral: outerRadius),
                     angularInset: 2
                 )
                 .foregroundStyle(by: .value("Category", category.name ?? "Unknown"))
