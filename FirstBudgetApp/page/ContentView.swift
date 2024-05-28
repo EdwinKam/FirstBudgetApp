@@ -27,7 +27,12 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .topLeading) {
-                // Main content
+                // Background layer
+                LinearGradient(gradient: Gradient(colors: [Color(.systemBlue).opacity(0.1), Color.white]),
+                               startPoint: .top,
+                               endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+                
                 VStack {
                     if !items.isEmpty {
                         PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
@@ -42,11 +47,11 @@ struct ContentView: View {
                             .padding()
                     }
                 }
-                .blur(radius: showOptions ? 3 : 0) // Apply blur effect based on showOptions state
+                .blur(radius: showOptions ? 3 : 0)
                 
-                // Overlay to capture tap gesture and close options
+                // Fade out and blur the rest of the page when options are shown
                 if showOptions {
-                    Color.clear
+                    Color.white.opacity(0.6)
                         .edgesIgnoringSafeArea(.all)
                         .onTapGesture {
                             withAnimation {
@@ -55,7 +60,6 @@ struct ContentView: View {
                         }
                 }
 
-                // Options menu
                 VStack {
                     // The circular button
                     Button(action: {
