@@ -87,8 +87,6 @@ struct PieChartView: View {
                         .fontWeight(.semibold)
                 }
             }
-            .padding()
-            .background(Color.white.opacity(0.7))
             .cornerRadius(10)
         }
     }
