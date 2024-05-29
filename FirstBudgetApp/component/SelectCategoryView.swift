@@ -18,47 +18,41 @@ struct SelectCategoryView: View {
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
 
-        VStack(alignment: .leading) {
-            Text("Select Category")
-                .font(.headline)
-                .padding(.bottom, 10)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
-                        HStack {
-                            ForEach(rowCategories, id: \.self) { category in
-                                CategoryCircleView(category: category, isSelected: category == selectedCategory)
-                                    .onTapGesture {
-                                        selectedCategory = category
-                                    }
-                            }
-                            if rowCategories.count < 4 {
-                                PlusCircleView(isSelected: false)
-                                    .onTapGesture {
-                                        isPresentingCategoryPopup = true
-                                    }
-                                ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
-                                    Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
+                    HStack {
+                        ForEach(rowCategories, id: \.self) { category in
+                            CategoryCircleView(category: category, isSelected: category == selectedCategory)
+                                .onTapGesture {
+                                    selectedCategory = category
                                 }
-                            }
                         }
-                    }
-                    if sortedCategories.count % 4 == 0 {
-                        HStack {
+                        if rowCategories.count < 4 {
                             PlusCircleView(isSelected: false)
                                 .onTapGesture {
                                     isPresentingCategoryPopup = true
                                 }
-                            Spacer()
+                            ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
+                                Spacer()
+                            }
                         }
                     }
                 }
-                .padding(.horizontal, 20)
+                if sortedCategories.count % 4 == 0 {
+                    HStack {
+                        PlusCircleView(isSelected: false)
+                            .onTapGesture {
+                                isPresentingCategoryPopup = true
+                            }
+                        Spacer()
+                    }
+                }
             }
-            .sheet(isPresented: $isPresentingCategoryPopup) {
-                NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory)
-            }
+            .padding(20)
+        }
+        .sheet(isPresented: $isPresentingCategoryPopup) {
+            NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory)
         }
     }
 

@@ -77,6 +77,12 @@ struct NewTransaction: View {
                             .padding(.leading, 20)
                             .padding(.trailing, 20)
 
+                        Text("What category is it?")
+                            .font(.largeTitle)
+                            .bold()
+                            .padding(.bottom, 20)
+                            .padding(.leading, 20)
+                        
                         SelectCategoryView(
                             selectedCategory: $selectedCategory,
                             isPresentingCategoryPopup: $isPresentingCategoryPopup
