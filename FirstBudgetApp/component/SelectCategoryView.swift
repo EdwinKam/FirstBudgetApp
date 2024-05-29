@@ -7,10 +7,17 @@ struct SelectCategoryView: View {
         animation: .default
     ) private var categories: FetchedResults<TransactionCategory>
 
+    @FetchRequest(
+        sortDescriptors: [],
+        animation: .default
+    ) private var transactions: FetchedResults<TransactionItem>
+
     @Binding var selectedCategory: TransactionCategory?
     @Binding var isPresentingCategoryPopup: Bool
 
     var body: some View {
+        let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
+
         VStack(alignment: .leading) {
             Text("Select Category")
                 .font(.headline)
@@ -18,46 +25,62 @@ struct SelectCategoryView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Array(categories.enumerated()), id: \.element) { index, category in
-                        if index % 4 == 0 {
-                            HStack {
-                                ForEach(index..<min(index + 4, categories.count), id: \.self) { innerIndex in
-                                    CategoryCircleView(category: categories[innerIndex], isSelected: categories[innerIndex] == selectedCategory)
-                                        .onTapGesture {
-                                            selectedCategory = categories[innerIndex]
-                                        }
-                                }
-                                // Add PlusCircleView if there's space in the current row
-                                if index + 4 >= categories.count {
-                                    PlusCircleView(isSelected: false)
-                                        .onTapGesture {
-                                            isPresentingCategoryPopup = true
-                                        }
-                                    ForEach(0..<(4 - (categories.count % 4) - 1), id: \.self) { _ in
-                                        Spacer()
+                    ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
+                        HStack {
+                            ForEach(rowCategories, id: \.self) { category in
+                                CategoryCircleView(category: category, isSelected: category == selectedCategory)
+                                    .onTapGesture {
+                                        selectedCategory = category
                                     }
+                            }
+                            if rowCategories.count < 4 {
+                                PlusCircleView(isSelected: false)
+                                    .onTapGesture {
+                                        isPresentingCategoryPopup = true
+                                    }
+                                ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
+                                    Spacer()
                                 }
                             }
                         }
                     }
-                    // Add PlusCircleView in a new row if the last row is full
-                    if categories.count % 4 == 0 {
+                    if sortedCategories.count % 4 == 0 {
                         HStack {
                             PlusCircleView(isSelected: false)
                                 .onTapGesture {
                                     isPresentingCategoryPopup = true
                                 }
-                            ForEach(0..<3, id: \.self) { _ in
-                                Spacer()
-                            }
+                            Spacer()
                         }
                     }
                 }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
             .sheet(isPresented: $isPresentingCategoryPopup) {
                 NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory)
             }
+        }
+    }
+
+    private func sortCategoriesByPopularity(categories: FetchedResults<TransactionCategory>, transactions: FetchedResults<TransactionItem>) -> [TransactionCategory] {
+        let categoryCounts = transactions.reduce(into: [TransactionCategory: Int]()) { counts, transaction in
+            if let category = transaction.category {
+                counts[category, default: 0] += 1
+            }
+        }
+
+        return categories.sorted { (category1, category2) -> Bool in
+            let count1 = categoryCounts[category1] ?? 0
+            let count2 = categoryCounts[category2] ?? 0
+            return count1 > count2
+        }
+    }
+}
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
         }
     }
 }
