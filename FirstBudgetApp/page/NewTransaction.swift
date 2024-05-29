@@ -47,23 +47,6 @@ struct NewTransaction: View {
                     .transition(.move(edge: .leading))
                 } else {
                     VStack(alignment: .leading) {
-                        HStack {
-                            Button(action: {
-                                withAnimation(.easeInOut) {
-                                    showDetails = false
-                                }
-                            }) {
-                                Image(systemName: "arrow.left.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.blue)
-                            }
-                            .padding(.top, 20)
-                            .padding(.leading, 20)
-
-                            Spacer()
-                        }
-
                         Text("How much was it?")
                             .font(.largeTitle)
                             .bold()
@@ -87,11 +70,23 @@ struct NewTransaction: View {
                             selectedCategory: $selectedCategory,
                             isPresentingCategoryPopup: $isPresentingCategoryPopup
                         )
-
-                        Spacer()
+                        .padding(.bottom, 20)
 
                         HStack {
+                            Button(action: {
+                                withAnimation(.easeInOut) {
+                                    showDetails = false
+                                }
+                            }) {
+                                Image(systemName: "arrow.left.circle.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(.blue)
+                            }
+                            .padding()
+
                             Spacer()
+
                             Button(action: addItem) {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
@@ -99,9 +94,12 @@ struct NewTransaction: View {
                                     .foregroundColor(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? .gray : .green)
                             }
                             .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
-                            .padding(20)
+                            .padding()
                         }
+
+                        Spacer()
                     }
+                    .padding(.horizontal)
                     .transition(.move(edge: .trailing))
                 }
             }
