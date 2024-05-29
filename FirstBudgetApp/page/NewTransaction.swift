@@ -14,52 +14,93 @@ struct NewTransaction: View {
     @State var selectedCategory: TransactionCategory?
     @State private var isPresentingCategoryPopup: Bool = false
     @State private var newCategoryName: String = ""
+    @State private var showDetails: Bool = false
 
     var body: some View {
         NavigationView {
             VStack {
-                Form {
-                    Section(header: Text("New Transaction")) {
-                        TextField("Description", text: $transactionDescription)
+                if !showDetails {
+                    VStack {
+                        TextField("Enter Description", text: $transactionDescription)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                        TextField("Amount", text: $amount)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
 
-                        Text("Select Category")
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 4), spacing: 16) {
-                            ForEach(categories) { category in
-                                CategoryCircleView(category: category, isSelected: category == selectedCategory)
-                                    .onTapGesture {
-                                        selectedCategory = category
-                                    }
-                            }
-                            PlusCircleView(isSelected: false)
-                                .onTapGesture {
-                                    isPresentingCategoryPopup = true
+                        Button(action: {
+                            if !transactionDescription.isEmpty {
+                                withAnimation(.easeInOut) {
+                                    showDetails = true
                                 }
+                            }
+                        }) {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.blue)
                         }
-                        .padding(.vertical)
+                        .padding()
+                    }
+                    .transition(.move(edge: .leading))
+                } else {
+                    VStack {
+                        HStack {
+                            Button(action: {
+                                withAnimation(.easeInOut) {
+                                    showDetails = false
+                                }
+                            }) {
+                                Image(systemName: "arrow.left.circle.fill")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.blue)
+                            }
+                            .padding()
 
-                        Button(action: addItem) {
-                            Text("Submit")
-                                .padding()
-                                .background(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? Color.gray : Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
+                            Spacer()
                         }
-                        .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
+
+                        Form {
+                            Section(header: Text("New Transaction")) {
+                                TextField("Amount", text: $amount)
+                                    .keyboardType(.decimalPad)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                                Text("Select Category")
+                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 4), spacing: 16) {
+                                    ForEach(categories) { category in
+                                        CategoryCircleView(category: category, isSelected: category == selectedCategory)
+                                            .onTapGesture {
+                                                selectedCategory = category
+                                            }
+                                    }
+                                    PlusCircleView(isSelected: false)
+                                        .onTapGesture {
+                                            isPresentingCategoryPopup = true
+                                        }
+                                }
+                                .padding(.vertical)
+
+                                Button(action: addItem) {
+                                    Text("Submit")
+                                        .padding()
+                                        .background(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? Color.gray : Color.green)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                }
+                                .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
+                            }
+                        }
+                        .padding()
+                        .sheet(isPresented: $isPresentingCategoryPopup) {
+                            NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategoryName: $newCategoryName) {
+                                addCategory(name: newCategoryName)
+                            }
+                            .presentationDetents([.medium])
+                            .presentationDragIndicator(.visible)
+                            .presentationBackground(Color.white)
+                            .presentationCornerRadius(30)
+                        }
                     }
-                }
-                .padding()
-                .sheet(isPresented: $isPresentingCategoryPopup) {
-                    NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategoryName: $newCategoryName) {
-                        addCategory(name: newCategoryName)
-                    }
-                    .presentationDetents([.medium])
-                    .presentationDragIndicator(.visible)
-                    .presentationBackground(Color.white)
-                    .presentationCornerRadius(30)
+                    .transition(.move(edge: .trailing))
                 }
             }
             .navigationTitle("New Transaction")
@@ -109,7 +150,6 @@ struct NewTransaction: View {
         }
     }
 }
-
 
 struct CategoryCircleView: View {
     var category: TransactionCategory
