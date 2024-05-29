@@ -20,25 +20,35 @@ struct NewTransaction: View {
         NavigationView {
             VStack {
                 if !showDetails {
-                    VStack {
+                    VStack(alignment: .leading) {
+                        Text("What's the new transaction for?")
+                            .font(.largeTitle)
+                            .bold()
+                            .padding(.bottom, 20)
+
                         TextField("Enter Description", text: $transactionDescription)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding()
+                            .padding(.bottom, 20)
 
-                        Button(action: {
-                            if !transactionDescription.isEmpty {
-                                withAnimation(.easeInOut) {
-                                    showDetails = true
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                if !transactionDescription.isEmpty {
+                                    withAnimation(.easeInOut) {
+                                        showDetails = true
+                                    }
                                 }
+                            }) {
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(transactionDescription.isEmpty ? .gray : .blue)
                             }
-                        }) {
-                            Image(systemName: "arrow.right.circle.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.blue)
+                            .padding()
+                            .disabled(transactionDescription.isEmpty) // Disable button when description is empty
                         }
-                        .padding()
                     }
+                    .padding(.horizontal)
                     .transition(.move(edge: .leading))
                 } else {
                     VStack {
