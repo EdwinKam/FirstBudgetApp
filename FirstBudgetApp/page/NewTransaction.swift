@@ -4,10 +4,6 @@ import CoreData
 struct NewTransaction: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) private var presentationMode
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default
-    ) private var categories: FetchedResults<TransactionCategory>
 
     @State private var transactionDescription: String = ""
     @State private var amount: String = ""
@@ -18,7 +14,7 @@ struct NewTransaction: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            ZStack {
                 if !showDetails {
                     VStack(alignment: .leading) {
                         Text("What's the new transaction for?")
@@ -51,7 +47,7 @@ struct NewTransaction: View {
                     .padding(.horizontal)
                     .transition(.move(edge: .leading))
                 } else {
-                    VStack {
+                    VStack(alignment: .leading) {
                         HStack {
                             Button(action: {
                                 withAnimation(.easeInOut) {
@@ -60,10 +56,11 @@ struct NewTransaction: View {
                             }) {
                                 Image(systemName: "arrow.left.circle.fill")
                                     .resizable()
-                                    .frame(width: 30, height: 30)
+                                    .frame(width: 50, height: 50)
                                     .foregroundColor(.blue)
                             }
-                            .padding()
+                            .padding(.top, 20)
+                            .padding(.leading, 20)
 
                             Spacer()
                         }
@@ -72,41 +69,19 @@ struct NewTransaction: View {
                             .font(.largeTitle)
                             .bold()
                             .padding(.bottom, 20)
+                            .padding(.leading, 20)
 
                         TextField("Enter Amount", text: $amount)
                             .keyboardType(.decimalPad)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding(.bottom, 20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
 
-                        Text("Select Category")
-                            .font(.headline)
-                            .padding(.bottom, 10)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(categories) { category in
-                                    CategoryCircleView(category: category, isSelected: category == selectedCategory)
-                                        .onTapGesture {
-                                            selectedCategory = category
-                                        }
-                                }
-                                PlusCircleView(isSelected: false)
-                                    .onTapGesture {
-                                        isPresentingCategoryPopup = true
-                                    }
-                            }
-                            .padding(.vertical)
-                        }
-
-                        Button(action: addItem) {
-                            Text("Submit")
-                                .padding()
-                                .background(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? Color.gray : Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }
-                        .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
-                        .padding()
+                        SelectCategoryView(
+                            selectedCategory: $selectedCategory,
+                            isPresentingCategoryPopup: $isPresentingCategoryPopup
+                        )
                         .sheet(isPresented: $isPresentingCategoryPopup) {
                             NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategoryName: $newCategoryName) {
                                 addCategory(name: newCategoryName)
@@ -115,6 +90,20 @@ struct NewTransaction: View {
                             .presentationDragIndicator(.visible)
                             .presentationBackground(Color.white)
                             .presentationCornerRadius(30)
+                        }
+
+                        Spacer()
+
+                        HStack {
+                            Spacer()
+                            Button(action: addItem) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? .gray : .green)
+                            }
+                            .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
+                            .padding(20)
                         }
                     }
                     .transition(.move(edge: .trailing))
