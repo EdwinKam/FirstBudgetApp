@@ -9,7 +9,6 @@ struct NewTransaction: View {
     @State private var amount: String = ""
     @State var selectedCategory: TransactionCategory?
     @State private var isPresentingCategoryPopup: Bool = false
-    @State private var newCategoryName: String = ""
     @State private var showDetails: Bool = false
 
     var body: some View {
@@ -82,15 +81,6 @@ struct NewTransaction: View {
                             selectedCategory: $selectedCategory,
                             isPresentingCategoryPopup: $isPresentingCategoryPopup
                         )
-                        .sheet(isPresented: $isPresentingCategoryPopup) {
-                            NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategoryName: $newCategoryName) {
-                                addCategory(name: newCategoryName)
-                            }
-                            .presentationDetents([.medium])
-                            .presentationDragIndicator(.visible)
-                            .presentationBackground(Color.white)
-                            .presentationCornerRadius(30)
-                        }
 
                         Spacer()
 
@@ -139,69 +129,6 @@ struct NewTransaction: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
-    }
-
-    private func addCategory(name: String) {
-        let newCategory = TransactionCategory(context: viewContext)
-        newCategory.name = name
-        newCategory.id = UUID()
-        do {
-            try viewContext.save()
-            selectedCategory = newCategory  // Select the newly added category
-            print("Category added successfully")
-        } catch {
-            let nsError = error as NSError
-            print("Unresolved error \(nsError), \(nsError.userInfo)")
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
-    }
-}
-
-struct CategoryCircleView: View {
-    var category: TransactionCategory
-    var isSelected: Bool
-
-    var body: some View {
-        VStack {
-            let firstLetter = category.name?.prefix(1) ?? "?"
-            Text(String(firstLetter))
-                .font(.headline)
-                .frame(width: 40, height: 40)
-                .background(isSelected ? Color.blue : Color.gray)
-                .foregroundColor(.white)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
-                )
-            Text(category.name ?? "")
-                .font(.caption)
-                .foregroundColor(.primary)
-        }
-        .padding(.horizontal, 8)
-    }
-}
-
-struct PlusCircleView: View {
-    var isSelected: Bool
-
-    var body: some View {
-        VStack {
-            Text("+")
-                .font(.headline)
-                .frame(width: 40, height: 40)
-                .background(isSelected ? Color.blue : Color.gray)
-                .foregroundColor(.white)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
-                )
-            Text("Add")
-                .font(.caption)
-                .foregroundColor(.primary)
-        }
-        .padding(.horizontal, 8)
     }
 }
 

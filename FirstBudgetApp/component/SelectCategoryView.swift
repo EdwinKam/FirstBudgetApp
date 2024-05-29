@@ -55,6 +55,57 @@ struct SelectCategoryView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .sheet(isPresented: $isPresentingCategoryPopup) {
+                NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory)
+            }
         }
+    }
+}
+
+struct CategoryCircleView: View {
+    var category: TransactionCategory
+    var isSelected: Bool
+
+    var body: some View {
+        VStack {
+            let firstLetter = category.name?.prefix(1) ?? "?"
+            Text(String(firstLetter))
+                .font(.headline)
+                .frame(width: 40, height: 40)
+                .background(isSelected ? Color.blue : Color.gray)
+                .foregroundColor(.white)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                )
+            Text(category.name ?? "")
+                .font(.caption)
+                .foregroundColor(.primary)
+        }
+        .padding(.horizontal, 8)
+    }
+}
+
+struct PlusCircleView: View {
+    var isSelected: Bool
+
+    var body: some View {
+        VStack {
+            Text("+")
+                .font(.headline)
+                .frame(width: 40, height: 40)
+                .background(isSelected ? Color.blue : Color.gray)
+                .foregroundColor(.white)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                )
+            Text("Add")
+                .font(.caption)
+                .foregroundColor(.primary)
+        }
+        .padding(.horizontal, 8)
     }
 }
