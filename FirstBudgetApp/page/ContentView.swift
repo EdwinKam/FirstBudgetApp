@@ -28,7 +28,7 @@ struct ContentView: View {
         NavigationView {
             ZStack(alignment: .topLeading) {
                 // Background layer
-                LinearGradient(gradient: Gradient(colors: [Color(.systemBlue).opacity(0.1), Color.white]),
+                LinearGradient(gradient: Gradient(colors: [Color(.systemGreen).opacity(0.1), Color.white]),
                                startPoint: .top,
                                endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
@@ -39,9 +39,7 @@ struct ContentView: View {
                             .frame(height: 300)
                             .padding()
                         TransactionList(items: items, filteredByCategory: selectedCategory)
-                            .background(Color.white) // Ensure the TransactionList has a white background
-                            .cornerRadius(40) // Optional: add corner radius to the transaction list
-                    } else {
+                                            } else {
                         Text("No data to display")
                             .frame(height: 300)
                             .padding()
