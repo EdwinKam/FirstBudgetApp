@@ -1,16 +1,11 @@
-//
-//  NewCategoryPopup.swift
-//  FirstBudgetApp
-//
-//  Created by Edwin Kam on 5/27/24.
-//
-
 import SwiftUI
+import CoreData
 
 struct NewCategoryPopup: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @Binding var isPresented: Bool
-    @Binding var newCategoryName: String
-    var onSave: () -> Void
+    @Binding var newCategory: TransactionCategory?
+    @State private var newCategoryName: String = ""
 
     var body: some View {
         VStack {
@@ -34,7 +29,7 @@ struct NewCategoryPopup: View {
                 }
 
                 Button(action: {
-                    onSave()
+                    addCategory(name: newCategoryName)
                     isPresented = false
                 }) {
                     Text("Save")
@@ -49,8 +44,19 @@ struct NewCategoryPopup: View {
         }
         .padding()
     }
-}
 
-//#Preview {
-//    NewCategoryPopup().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-//}
+    private func addCategory(name: String) {
+        let newCategoryItem = TransactionCategory(context: viewContext)
+        newCategoryItem.name = name
+        newCategoryItem.id = UUID()
+        newCategory = newCategoryItem
+        do {
+            try viewContext.save()
+            print("Category added successfully")
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+}

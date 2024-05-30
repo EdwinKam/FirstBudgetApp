@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C690F2C06FBF100A79661 /* SelectCategoryView.swift */; };
 		4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4377DC102C03B57300B12B05 /* NewTransaction.swift */; };
 		43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */; };
 		43BC38932C031738009CF151 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38922C031738009CF151 /* ContentView.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		432C690F2C06FBF100A79661 /* SelectCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryView.swift; sourceTree = "<group>"; };
 		4377DC102C03B57300B12B05 /* NewTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTransaction.swift; sourceTree = "<group>"; };
 		43BC388D2C031738009CF151 /* FirstBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirstBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstBudgetAppApp.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				43D8E2772C047D60005AE92F /* TransactionList.swift */,
 				43D8E27A2C055A58005AE92F /* PieChartView.swift */,
 				43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */,
+				432C690F2C06FBF100A79661 /* SelectCategoryView.swift */,
 			);
 			path = component;
 			sourceTree = "<group>";
@@ -313,6 +316,7 @@
 				43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
 				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,
+				432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,
 				43D8E27B2C055A58005AE92F /* PieChartView.swift in Sources */,
 				43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */,
