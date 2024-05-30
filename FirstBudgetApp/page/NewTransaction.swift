@@ -6,7 +6,8 @@ struct NewTransaction: View {
     @Environment(\.presentationMode) private var presentationMode
 
     @State private var transactionDescription: String = ""
-    @State private var amount: String = ""
+    @State private var amount: String = "$0.00"
+    @State private var rawAmount: String = ""
     @State var selectedCategory: TransactionCategory?
     @State private var isPresentingCategoryPopup: Bool = false
     @State private var showDetails: Bool = false
@@ -25,7 +26,7 @@ struct NewTransaction: View {
                             placeholder: Text("Enter Description").foregroundColor(.gray),
                             text: $transactionDescription
                         )
-                        .font(.largeTitle) // Make the input text even bigger
+                        .font(.largeTitle)
                         .padding(.bottom, 20)
 
                         HStack {
@@ -43,7 +44,7 @@ struct NewTransaction: View {
                                     .foregroundColor(transactionDescription.isEmpty ? .gray : .blue)
                             }
                             .padding()
-                            .disabled(transactionDescription.isEmpty) // Disable button when description is empty
+                            .disabled(transactionDescription.isEmpty)
                         }
                     }
                     .padding(.horizontal)
@@ -56,12 +57,11 @@ struct NewTransaction: View {
                             .padding(.bottom, 20)
                             .padding(.leading, 20)
 
-                        CustomTextFieldWithPrefix(
-                            prefix: "$",
-                            placeholder: Text("Enter Amount").foregroundColor(.gray),
-                            text: $amount
+                        CustomAmountTextField(
+                            amount: $amount,
+                            rawAmount: $rawAmount
                         )
-                        .font(.largeTitle) // Make the input text even bigger
+                        .font(.largeTitle)
                         .padding(.bottom, 20)
                         .padding(.leading, 20)
                         .padding(.trailing, 20)
@@ -97,9 +97,9 @@ struct NewTransaction: View {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
                                     .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? .gray : .green)
+                                    .foregroundColor(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil ? .gray : .green)
                             }
-                            .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
+                            .disabled(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil)
                             .padding()
                         }
 
@@ -114,26 +114,35 @@ struct NewTransaction: View {
     }
 
     private func addItem() {
-        guard let amountValue = Double(amount),
+        // Safely unwrap the rawAmount and convert it to a Double, then divide by 100
+        guard let rawAmountValue = Double(rawAmount),
               !transactionDescription.isEmpty,
               let category = selectedCategory else {
             return
         }
+        
+        let amountValue = rawAmountValue / 100.0
 
         withAnimation {
+            // Create a new transaction item in the Core Data context
             let newItem = TransactionItem(context: viewContext)
             newItem.transactionDescription = transactionDescription
             newItem.amount = amountValue
             newItem.category = category
 
             do {
+                // Try to save the context
                 try viewContext.save()
-                transactionDescription = ""  // Clear the input fields after saving
-                amount = ""
+                // Clear the input fields after saving
+                transactionDescription = ""
+                amount = "$0.00"
+                rawAmount = ""
                 selectedCategory = nil
+                // Print success message and dismiss the view
                 print("Item added successfully")
-                presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
+                presentationMode.wrappedValue.dismiss()
             } catch {
+                // Handle any errors during saving
                 let nsError = error as NSError
                 print("Unresolved error \(nsError), \(nsError.userInfo)")
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
@@ -148,40 +157,71 @@ struct CustomTextField: View {
     var editingChanged: (Bool) -> () = { _ in }
     var commit: () -> () = { }
 
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         ZStack(alignment: .leading) {
-            if text.isEmpty { placeholder }
+            if text.isEmpty {
+                placeholder
+                    .padding(.leading, 8)
+            }
             TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit)
-                .font(.largeTitle) // Make the input text even bigger
-                .padding()
+                .font(.largeTitle)
+                .padding(8)
                 .background(Color.clear)
+                .focused($isFocused)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        isFocused = true
+                    }
+                }
         }
     }
 }
 
-struct CustomTextFieldWithPrefix: View {
-    var prefix: String
-    var placeholder: Text
-    @Binding var text: String
-    var editingChanged: (Bool) -> () = { _ in }
-    var commit: () -> () = { }
+struct CustomAmountTextField: View {
+    @Binding var amount: String
+    @Binding var rawAmount: String
+    @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack {
-            Text(prefix)
-                .font(.largeTitle) // Make the prefix text bigger
-                .foregroundColor(.gray)
-            ZStack(alignment: .leading) {
-                if text.isEmpty { placeholder }
-                TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit)
-                    .font(.largeTitle) // Make the input text even bigger
-                    .padding()
-                    .background(Color.clear)
-                    .keyboardType(.decimalPad) // Ensure the keyboard is decimal pad
+        ZStack {
+            Text(amount)
+                .font(.largeTitle)
+                .foregroundColor(.black)
+                .multilineTextAlignment(.center)
+                .padding()
+                .background(Color.clear)
+
+            TextField("", text: Binding(
+                get: { self.rawAmount },
+                set: { newValue in
+                    let filtered = newValue.filter { "0123456789".contains($0) }
+                    if filtered != self.rawAmount {
+                        self.rawAmount = filtered
+                    }
+                    if let intValue = Int(self.rawAmount) {
+                        self.amount = "$\(String(format: "%.2f", Double(intValue) / 100.0))"
+                    } else {
+                        self.amount = "$0.00"
+                    }
+                }
+            ))
+            .font(.largeTitle)
+            .foregroundColor(.clear) // Make the text field itself invisible
+            .multilineTextAlignment(.center)
+            .keyboardType(.numberPad)
+            .focused($isFocused)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isFocused = true
+                }
             }
         }
     }
 }
+
+// Assuming SelectCategoryView and TransactionCategory are defined elsewhere
 
 #Preview {
     NewTransaction().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
