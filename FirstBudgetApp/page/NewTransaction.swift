@@ -21,9 +21,12 @@ struct NewTransaction: View {
                             .bold()
                             .padding(.bottom, 20)
 
-                        TextField("Enter Description", text: $transactionDescription)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.bottom, 20)
+                        CustomTextField(
+                            placeholder: Text("Enter Description").foregroundColor(.gray),
+                            text: $transactionDescription
+                        )
+                        .font(.largeTitle) // Make the input text even bigger
+                        .padding(.bottom, 20)
 
                         HStack {
                             Spacer()
@@ -53,12 +56,15 @@ struct NewTransaction: View {
                             .padding(.bottom, 20)
                             .padding(.leading, 20)
 
-                        TextField("Enter Amount", text: $amount)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
-                            .padding(.trailing, 20)
+                        CustomTextFieldWithPrefix(
+                            prefix: "$",
+                            placeholder: Text("Enter Amount").foregroundColor(.gray),
+                            text: $amount
+                        )
+                        .font(.largeTitle) // Make the input text even bigger
+                        .padding(.bottom, 20)
+                        .padding(.leading, 20)
+                        .padding(.trailing, 20)
 
                         Text("What category is it?")
                             .font(.largeTitle)
@@ -131,6 +137,47 @@ struct NewTransaction: View {
                 let nsError = error as NSError
                 print("Unresolved error \(nsError), \(nsError.userInfo)")
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+}
+
+struct CustomTextField: View {
+    var placeholder: Text
+    @Binding var text: String
+    var editingChanged: (Bool) -> () = { _ in }
+    var commit: () -> () = { }
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            if text.isEmpty { placeholder }
+            TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit)
+                .font(.largeTitle) // Make the input text even bigger
+                .padding()
+                .background(Color.clear)
+        }
+    }
+}
+
+struct CustomTextFieldWithPrefix: View {
+    var prefix: String
+    var placeholder: Text
+    @Binding var text: String
+    var editingChanged: (Bool) -> () = { _ in }
+    var commit: () -> () = { }
+
+    var body: some View {
+        HStack {
+            Text(prefix)
+                .font(.largeTitle) // Make the prefix text bigger
+                .foregroundColor(.gray)
+            ZStack(alignment: .leading) {
+                if text.isEmpty { placeholder }
+                TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit)
+                    .font(.largeTitle) // Make the input text even bigger
+                    .padding()
+                    .background(Color.clear)
+                    .keyboardType(.decimalPad) // Ensure the keyboard is decimal pad
             }
         }
     }
