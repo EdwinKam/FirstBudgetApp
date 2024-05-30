@@ -41,7 +41,7 @@ struct NewTransaction: View {
                                 Image(systemName: "arrow.right.circle.fill")
                                     .resizable()
                                     .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty ? .gray : .blue)
+                                    .foregroundColor(transactionDescription.isEmpty ? .gray : Color(.systemGreen).opacity(0.7))
                             }
                             .padding()
                             .disabled(transactionDescription.isEmpty)
@@ -87,7 +87,7 @@ struct NewTransaction: View {
                                 Image(systemName: "arrow.left.circle.fill")
                                     .resizable()
                                     .frame(width: 50, height: 50)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.gray)
                             }
                             .padding()
 
