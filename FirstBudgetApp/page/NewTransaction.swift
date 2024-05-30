@@ -13,103 +13,117 @@ struct NewTransaction: View {
     @State private var showDetails: Bool = false
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                if !showDetails {
-                    VStack(alignment: .leading) {
-                        Text("What's the new transaction for?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
+        ZStack {
+            Color.white.opacity(0.001) // Invisible background to detect taps
+                .onTapGesture {
+                    hideKeyboard()
+                }
 
-                        CustomTextField(
-                            placeholder: Text("Enter Description").foregroundColor(.gray),
-                            text: $transactionDescription
-                        )
+            if !showDetails {
+                VStack(alignment: .leading) {
+                    Text("What's the new transaction for?")
                         .font(.largeTitle)
+                        .bold()
                         .padding(.bottom, 20)
 
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                if !transactionDescription.isEmpty {
-                                    withAnimation(.easeInOut) {
-                                        showDetails = true
-                                    }
-                                }
-                            }) {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty ? .gray : Color(.systemGreen).opacity(0.7))
-                            }
-                            .padding()
-                            .disabled(transactionDescription.isEmpty)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .transition(.move(edge: .leading))
-                } else {
-                    VStack(alignment: .leading) {
-                        Text("How much was it?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
+                    CustomTextField(
+                        placeholder: Text("Enter Description").foregroundColor(.gray),
+                        text: $transactionDescription
+                    )
+                    .font(.largeTitle)
+                    .padding(.bottom, 20)
 
-                        CustomAmountTextField(
-                            amount: $amount,
-                            rawAmount: $rawAmount
-                        )
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            if !transactionDescription.isEmpty {
+                                withAnimation(.easeInOut) {
+                                    showDetails = true
+                                }
+                            }
+                        }) {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(transactionDescription.isEmpty ? .gray : Color(.systemGreen).opacity(0.7))
+                        }
+                        .padding()
+                        .disabled(transactionDescription.isEmpty)
+                    }
+                }
+                .padding(.horizontal)
+                .transition(.move(edge: .leading))
+            } else {
+                VStack(alignment: .leading) {
+                    Text("How much was it?")
                         .font(.largeTitle)
+                        .bold()
                         .padding(.bottom, 20)
                         .padding(.leading, 20)
-                        .padding(.trailing, 20)
 
-                        Text("What category is it?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
-                        
-                        SelectCategoryView(
-                            selectedCategory: $selectedCategory,
-                            isPresentingCategoryPopup: $isPresentingCategoryPopup
-                        )
+                    CustomAmountTextField(
+                        amount: $amount,
+                        rawAmount: $rawAmount
+                    )
+                    .font(.largeTitle)
+                    .padding(.bottom, 20)
+                    .padding(.leading, 20)
+                    .padding(.trailing, 20)
+
+                    Text("What category is it?")
+                        .font(.largeTitle)
+                        .bold()
                         .padding(.bottom, 20)
+                        .padding(.leading, 20)
+                    
+                    SelectCategoryView(
+                        selectedCategory: $selectedCategory,
+                        isPresentingCategoryPopup: $isPresentingCategoryPopup
+                    )
+                    .padding(.bottom, 20)
 
-                        HStack {
-                            Button(action: {
-                                withAnimation(.easeInOut) {
-                                    showDetails = false
-                                }
-                            }) {
-                                Image(systemName: "arrow.left.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.gray)
+                    HStack {
+                        Button(action: {
+                            withAnimation(.easeInOut) {
+                                showDetails = false
                             }
-                            .padding()
-
-                            Spacer()
-
-                            Button(action: addItem) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil ? .gray : .green)
-                            }
-                            .disabled(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil)
-                            .padding()
+                        }) {
+                            Image(systemName: "arrow.left.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.gray)
                         }
+                        .padding()
 
                         Spacer()
+
+                        Button(action: addItem) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil ? .gray : .green)
+                        }
+                        .disabled(transactionDescription.isEmpty || rawAmount.isEmpty || selectedCategory == nil)
+                        .padding()
                     }
-                    .padding(.horizontal)
-                    .transition(.move(edge: .trailing))
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .transition(.move(edge: .trailing))
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "arrow.left.circle.fill")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.red)
                 }
             }
-            .navigationTitle("New Transaction")
         }
     }
 
@@ -148,6 +162,10 @@ struct NewTransaction: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
