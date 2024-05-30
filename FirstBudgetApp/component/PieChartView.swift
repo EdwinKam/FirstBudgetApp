@@ -6,6 +6,7 @@ struct PieChartView: View {
     @Binding var selectedCategory: TransactionCategory? // Binding for selected category
     @State var pieSelection: Double?
     @State var clickCount: Int = 0
+    let timeRange: String // New parameter for time range
 
     private static let chartColors: [Color] = [.red, .green, .blue, .orange, .purple]
 
@@ -82,6 +83,9 @@ struct PieChartView: View {
                         .font(.title)
                         .fontWeight(.semibold)
                 } else {
+                    Text(timeRange == "This Week" ? "This Week Total" : "This Month Total")
+                        .font(.headline)
+                        .foregroundColor(.gray)
                     Text("\(totalAmount, specifier: "%.2f")")
                         .font(.title)
                         .fontWeight(.semibold)

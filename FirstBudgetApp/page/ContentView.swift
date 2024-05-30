@@ -13,6 +13,13 @@ struct ContentView: View {
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
+    @State private var selectedTimePeriod: TimePeriod = .thisWeek // State for selected time period
+
+    // Enum for time period options
+    enum TimePeriod: String, CaseIterable {
+        case thisWeek = "This Week"
+        case thisMonth = "This Month"
+    }
 
     // Computed property to get the top 2 popular categories
     private var top2Categories: [TransactionCategory] {
@@ -35,11 +42,21 @@ struct ContentView: View {
                 
                 VStack {
                     if !items.isEmpty {
-                        PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
+                        PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory, timeRange: selectedTimePeriod.rawValue)
                             .frame(height: 300)
                             .padding()
+                        
+                        // Segmented control for time period selection
+                        Picker("Time Period", selection: $selectedTimePeriod) {
+                            ForEach(TimePeriod.allCases, id: \.self) { period in
+                                Text(period.rawValue).tag(period)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding([.leading, .trailing, .bottom])
+                        
                         TransactionList(items: items, filteredByCategory: selectedCategory)
-                                            } else {
+                    } else {
                         Text("No data to display")
                             .frame(height: 300)
                             .padding()
