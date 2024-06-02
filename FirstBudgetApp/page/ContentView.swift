@@ -93,23 +93,33 @@ struct ContentView: View {
                     // The pop-up options
                     if showOptions {
                         VStack(alignment: .leading, spacing: 10) {
-                            NavigationLink(destination: NewTransaction()) {
-                                Text("Add New Transaction")
-                                    .padding()
-                                    .frame(minWidth: 150)
-                                    .background(Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
-                            ForEach(top2Categories, id: \.self) { category in
-                                NavigationLink(destination: NewTransaction(selectedCategory: category)) {
-                                    Text(category.name ?? "Unknown")
+                            NavigationLink(
+                                destination: NewTransaction().onDisappear {
+                                    showOptions = false
+                                },
+                                label: {
+                                    Text("Add New Transaction")
                                         .padding()
                                         .frame(minWidth: 150)
                                         .background(Color.gray)
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
                                 }
+                            )
+                            ForEach(top2Categories, id: \.self) { category in
+                                NavigationLink(
+                                    destination: NewTransaction(selectedCategory: category).onDisappear {
+                                        showOptions = false
+                                    },
+                                    label: {
+                                        Text(category.name ?? "Unknown")
+                                            .padding()
+                                            .frame(minWidth: 150)
+                                            .background(Color.gray)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(10)
+                                    }
+                                )
                             }
                         }
                         .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
