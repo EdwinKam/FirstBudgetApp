@@ -6,16 +6,23 @@ struct NewCategoryPopup: View {
     @Binding var isPresented: Bool
     @Binding var newCategory: TransactionCategory?
     @State private var newCategoryName: String = ""
+    @Binding var editFromCategory: TransactionCategory?
 
     var body: some View {
         VStack {
-            Text("New Category")
+            Text(editFromCategory == nil ? "New Category" : "Edit Category")
                 .font(.headline)
                 .padding()
 
             TextField("Category Name", text: $newCategoryName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+                .onAppear {
+                    print(editFromCategory)
+                    if let category = editFromCategory {
+                        newCategoryName = category.name ?? ""
+                    }
+                }
 
             HStack {
                 Button(action: {
@@ -29,7 +36,11 @@ struct NewCategoryPopup: View {
                 }
 
                 Button(action: {
-                    addCategory(name: newCategoryName)
+                    if let category = editFromCategory {
+                        updateCategory(category: category, name: newCategoryName)
+                    } else {
+                        addCategory(name: newCategoryName)
+                    }
                     isPresented = false
                 }) {
                     Text("Save")
@@ -53,6 +64,19 @@ struct NewCategoryPopup: View {
         do {
             try viewContext.save()
             print("Category added successfully")
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+
+    private func updateCategory(category: TransactionCategory, name: String) {
+        category.name = name
+        do {
+            try viewContext.save()
+            newCategory = category
+            print("Category updated successfully")
         } catch {
             let nsError = error as NSError
             print("Unresolved error \(nsError), \(nsError.userInfo)")
