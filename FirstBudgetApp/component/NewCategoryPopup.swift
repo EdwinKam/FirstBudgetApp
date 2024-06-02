@@ -6,10 +6,11 @@ struct NewCategoryPopup: View {
     @Binding var isPresented: Bool
     @Binding var newCategory: TransactionCategory?
     @State private var newCategoryName: String = ""
+    @Binding var editFromCategory: TransactionCategory?
 
     var body: some View {
         VStack {
-            Text(newCategory == nil ? "New Category" : "Edit Category")
+            Text(editFromCategory == nil ? "New Category" : "Edit Category")
                 .font(.headline)
                 .padding()
 
@@ -17,7 +18,8 @@ struct NewCategoryPopup: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .onAppear {
-                    if let category = newCategory {
+                    print(editFromCategory)
+                    if let category = editFromCategory {
                         newCategoryName = category.name ?? ""
                     }
                 }
@@ -34,7 +36,7 @@ struct NewCategoryPopup: View {
                 }
 
                 Button(action: {
-                    if let category = newCategory {
+                    if let category = editFromCategory {
                         updateCategory(category: category, name: newCategoryName)
                     } else {
                         addCategory(name: newCategoryName)
@@ -73,6 +75,7 @@ struct NewCategoryPopup: View {
         category.name = name
         do {
             try viewContext.save()
+            newCategory = category
             print("Category updated successfully")
         } catch {
             let nsError = error as NSError

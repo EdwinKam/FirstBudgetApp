@@ -14,6 +14,7 @@ struct SelectCategoryView: View {
 
     @Binding var selectedCategory: TransactionCategory?
     @Binding var isPresentingCategoryPopup: Bool
+    @State var categoryToEdit: TransactionCategory?
 
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
@@ -24,10 +25,13 @@ struct SelectCategoryView: View {
                     ForEach(rowCategories, id: \.self) { category in
                         CategoryCircleView(category: category, isSelected: category == selectedCategory)
                             .onTapGesture {
+                                print("got tap")
                                 selectedCategory = category
                             }
                             .onLongPressGesture {
-                                selectedCategory = category // Set selected category for editing
+                                print("got long pressed")
+                                categoryToEdit = category // Set category to edit
+                                print(category)
                                 isPresentingCategoryPopup = true
                             }
                     }
@@ -35,6 +39,7 @@ struct SelectCategoryView: View {
                         PlusCircleView(isSelected: false)
                             .onTapGesture {
                                 selectedCategory = nil // Clear selected category for new addition
+                                categoryToEdit = nil
                                 isPresentingCategoryPopup = true
                             }
                         ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
@@ -48,6 +53,7 @@ struct SelectCategoryView: View {
                     PlusCircleView(isSelected: false)
                         .onTapGesture {
                             selectedCategory = nil // Clear selected category for new addition
+                            categoryToEdit = nil
                             isPresentingCategoryPopup = true
                         }
                     Spacer()
@@ -56,7 +62,7 @@ struct SelectCategoryView: View {
         }
         .padding(20)
         .sheet(isPresented: $isPresentingCategoryPopup) {
-            NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory)
+            NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory, editFromCategory: $categoryToEdit)
         }
     }
 
