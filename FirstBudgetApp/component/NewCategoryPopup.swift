@@ -9,13 +9,18 @@ struct NewCategoryPopup: View {
 
     var body: some View {
         VStack {
-            Text("New Category")
+            Text(newCategory == nil ? "New Category" : "Edit Category")
                 .font(.headline)
                 .padding()
 
             TextField("Category Name", text: $newCategoryName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+                .onAppear {
+                    if let category = newCategory {
+                        newCategoryName = category.name ?? ""
+                    }
+                }
 
             HStack {
                 Button(action: {
@@ -29,7 +34,11 @@ struct NewCategoryPopup: View {
                 }
 
                 Button(action: {
-                    addCategory(name: newCategoryName)
+                    if let category = newCategory {
+                        updateCategory(category: category, name: newCategoryName)
+                    } else {
+                        addCategory(name: newCategoryName)
+                    }
                     isPresented = false
                 }) {
                     Text("Save")
@@ -53,6 +62,18 @@ struct NewCategoryPopup: View {
         do {
             try viewContext.save()
             print("Category added successfully")
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+
+    private func updateCategory(category: TransactionCategory, name: String) {
+        category.name = name
+        do {
+            try viewContext.save()
+            print("Category updated successfully")
         } catch {
             let nsError = error as NSError
             print("Unresolved error \(nsError), \(nsError.userInfo)")

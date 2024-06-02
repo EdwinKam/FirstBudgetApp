@@ -26,10 +26,15 @@ struct SelectCategoryView: View {
                             .onTapGesture {
                                 selectedCategory = category
                             }
+                            .onLongPressGesture {
+                                selectedCategory = category // Set selected category for editing
+                                isPresentingCategoryPopup = true
+                            }
                     }
                     if rowCategories.count < 4 {
                         PlusCircleView(isSelected: false)
                             .onTapGesture {
+                                selectedCategory = nil // Clear selected category for new addition
                                 isPresentingCategoryPopup = true
                             }
                         ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
@@ -42,6 +47,7 @@ struct SelectCategoryView: View {
                 HStack {
                     PlusCircleView(isSelected: false)
                         .onTapGesture {
+                            selectedCategory = nil // Clear selected category for new addition
                             isPresentingCategoryPopup = true
                         }
                     Spacer()
