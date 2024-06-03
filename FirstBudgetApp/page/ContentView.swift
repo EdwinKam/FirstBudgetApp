@@ -13,6 +13,13 @@ struct ContentView: View {
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
+    @State private var selectedTimePeriod: TimePeriod = .thisWeek // State for selected time period
+
+    // Enum for time period options
+    enum TimePeriod: String, CaseIterable {
+        case thisWeek = "This Week"
+        case thisMonth = "This Month"
+    }
 
     // Computed property to get the top 2 popular categories
     private var top2Categories: [TransactionCategory] {
@@ -28,19 +35,27 @@ struct ContentView: View {
         NavigationView {
             ZStack(alignment: .topLeading) {
                 // Background layer
-                LinearGradient(gradient: Gradient(colors: [Color(.systemBlue).opacity(0.1), Color.white]),
+                LinearGradient(gradient: Gradient(colors: [Color(.systemGreen).opacity(0.1), Color.white]),
                                startPoint: .top,
                                endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
                 
                 VStack {
                     if !items.isEmpty {
-                        PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory)
+                        PieChartView(transactionItems: Array(items), selectedCategory: $selectedCategory, timeRange: selectedTimePeriod.rawValue)
                             .frame(height: 300)
                             .padding()
+                        
+                        // Segmented control for time period selection
+                        Picker("Time Period", selection: $selectedTimePeriod) {
+                            ForEach(TimePeriod.allCases, id: \.self) { period in
+                                Text(period.rawValue).tag(period)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding([.leading, .trailing, .bottom])
+                        
                         TransactionList(items: items, filteredByCategory: selectedCategory)
-                            .background(Color.white) // Ensure the TransactionList has a white background
-                            .cornerRadius(40) // Optional: add corner radius to the transaction list
                     } else {
                         Text("No data to display")
                             .frame(height: 300)
@@ -78,23 +93,33 @@ struct ContentView: View {
                     // The pop-up options
                     if showOptions {
                         VStack(alignment: .leading, spacing: 10) {
-                            NavigationLink(destination: NewTransaction()) {
-                                Text("Add New Transaction")
-                                    .padding()
-                                    .frame(minWidth: 150)
-                                    .background(Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
-                            ForEach(top2Categories, id: \.self) { category in
-                                NavigationLink(destination: NewTransaction(selectedCategory: category)) {
-                                    Text(category.name ?? "Unknown")
+                            NavigationLink(
+                                destination: NewTransaction().onDisappear {
+                                    showOptions = false
+                                },
+                                label: {
+                                    Text("Add New Transaction")
                                         .padding()
                                         .frame(minWidth: 150)
                                         .background(Color.gray)
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
                                 }
+                            )
+                            ForEach(top2Categories, id: \.self) { category in
+                                NavigationLink(
+                                    destination: NewTransaction(selectedCategory: category).onDisappear {
+                                        showOptions = false
+                                    },
+                                    label: {
+                                        Text(category.name ?? "Unknown")
+                                            .padding()
+                                            .frame(minWidth: 150)
+                                            .background(Color.gray)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(10)
+                                    }
+                                )
                             }
                         }
                         .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
