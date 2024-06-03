@@ -4,6 +4,7 @@ import Charts
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Binding var showSignInView: Bool
 
     // FetchRequest with dynamic predicate
     @FetchRequest(
@@ -182,6 +183,21 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            .navigationBarItems(trailing: Button(action: {
+                do {
+                    try AuthManager.shared.signOut()
+                    // Set showSignInView to true when signed out
+                    showSignInView = true
+                } catch {
+                    // Handle error appropriately, e.g., show an alert
+                    print("Error signing out: \(error.localizedDescription)")
+                }
+            }) {
+                Image(systemName: "power")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.red)
+            })
         }
     }
 
@@ -226,5 +242,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    ContentView(showSignInView: .constant(true)).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

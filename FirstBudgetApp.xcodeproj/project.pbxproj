@@ -18,6 +18,7 @@
 		431FAFD52C0D8ED000B12086 /* AuthSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFD42C0D8ED000B12086 /* AuthSignIn.swift */; };
 		431FAFD82C0D91BC00B12086 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFD72C0D91BC00B12086 /* Utilities.swift */; };
 		431FAFDB2C0D950C00B12086 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFDA2C0D950C00B12086 /* AuthManager.swift */; };
+		431FAFDD2C0D9D0A00B12086 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFDC2C0D9D0A00B12086 /* RootView.swift */; };
 		432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C690F2C06FBF100A79661 /* SelectCategoryView.swift */; };
 		4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4377DC102C03B57300B12B05 /* NewTransaction.swift */; };
 		43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */; };
@@ -64,6 +65,7 @@
 		431FAFD42C0D8ED000B12086 /* AuthSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSignIn.swift; sourceTree = "<group>"; };
 		431FAFD72C0D91BC00B12086 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		431FAFDA2C0D950C00B12086 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		431FAFDC2C0D9D0A00B12086 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		432C690F2C06FBF100A79661 /* SelectCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryView.swift; sourceTree = "<group>"; };
 		4377DC102C03B57300B12B05 /* NewTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTransaction.swift; sourceTree = "<group>"; };
 		43BC388D2C031738009CF151 /* FirstBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirstBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -192,6 +194,7 @@
 				43BC389B2C031738009CF151 /* FirstBudgetApp.xcdatamodeld */,
 				43BC38962C031738009CF151 /* Preview Content */,
 				431FAFC12C0D4B7300B12086 /* Launch Screen.storyboard */,
+				431FAFDC2C0D9D0A00B12086 /* RootView.swift */,
 			);
 			path = FirstBudgetApp;
 			sourceTree = "<group>";
@@ -382,6 +385,7 @@
 				43FA4A882C0470C90024E956 /* NewCategoryPopup.swift in Sources */,
 				43D8E2782C047D60005AE92F /* TransactionList.swift in Sources */,
 				43CCB1DF2C0463ED00B62030 /* TransactionCategory+CoreDataClass.swift in Sources */,
+				431FAFDD2C0D9D0A00B12086 /* RootView.swift in Sources */,
 				431FAFD52C0D8ED000B12086 /* AuthSignIn.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
 				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,

@@ -24,7 +24,7 @@ struct FirstBudgetAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AuthSignIn()
+            RootView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
