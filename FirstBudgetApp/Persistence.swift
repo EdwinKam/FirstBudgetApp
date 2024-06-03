@@ -27,7 +27,8 @@ struct PersistenceController {
         for i in 0..<10 {
             let newItem = TransactionItem(context: viewContext)
             newItem.transactionDescription = "sample description \(i)"
-            newItem.amount = 9014
+            newItem.amount = 90
+            newItem.createdAt = initializeDate(from: "06/02/2024")
             if let category = categories.randomElement() {
                 newItem.category = category
             }
@@ -67,4 +68,11 @@ struct PersistenceController {
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
+    
+    static func initializeDate(from string: String) -> Date? {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MM/dd/yyyy"
+            let date = dateFormatter.date(from: string)
+            return date
+        }
 }

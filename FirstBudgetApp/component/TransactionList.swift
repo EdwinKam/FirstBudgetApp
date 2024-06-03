@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TransactionList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    var items: FetchedResults<TransactionItem>
+    var items: [TransactionItem]
     var filteredByCategory: TransactionCategory?
     @State private var selectedItem: TransactionItem?
 
