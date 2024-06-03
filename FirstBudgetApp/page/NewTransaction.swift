@@ -10,100 +10,123 @@ struct NewTransaction: View {
     @State var selectedCategory: TransactionCategory?
     @State private var isPresentingCategoryPopup: Bool = false
     @State private var showDetails: Bool = false
+    @FocusState private var isDescriptionFieldFocused: Bool
+    @FocusState private var isAmountFieldFocused: Bool
 
     var body: some View {
         NavigationView {
-            ZStack {
-                if !showDetails {
-                    VStack(alignment: .leading) {
-                        Text("What's the new transaction for?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
+            GeometryReader { geometry in
+                ZStack {
+                    Color.clear // This makes the whole area tappable
 
-                        TextField("Enter Description", text: $transactionDescription)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.bottom, 20)
+                    if !showDetails {
+                        VStack(alignment: .leading) {
+                            Text("What's the new transaction for?")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.bottom, 20)
 
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                if !transactionDescription.isEmpty {
-                                    withAnimation(.easeInOut) {
-                                        showDetails = true
+                            TextField("Enter Description", text: $transactionDescription)
+                                .font(.largeTitle)
+                                .padding(.bottom, 20)
+                                .background(Color.clear)
+                                .focused($isDescriptionFieldFocused)
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now()) {
+                                        isDescriptionFieldFocused = true
                                     }
                                 }
-                            }) {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty ? .gray : .blue)
-                            }
-                            .padding()
-                            .disabled(transactionDescription.isEmpty) // Disable button when description is empty
-                        }
-                    }
-                    .padding(.horizontal)
-                    .transition(.move(edge: .leading))
-                } else {
-                    VStack(alignment: .leading) {
-                        Text("How much was it?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
 
-                        TextField("Enter Amount", text: $amount)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
-                            .padding(.trailing, 20)
-
-                        Text("What category is it?")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.bottom, 20)
-                            .padding(.leading, 20)
-                        
-                        SelectCategoryView(
-                            selectedCategory: $selectedCategory,
-                            isPresentingCategoryPopup: $isPresentingCategoryPopup
-                        )
-                        .padding(.bottom, 20)
-
-                        HStack {
-                            Button(action: {
-                                withAnimation(.easeInOut) {
-                                    showDetails = false
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    if !transactionDescription.isEmpty {
+                                        withAnimation(.easeInOut) {
+                                            showDetails = true
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(transactionDescription.isEmpty ? .gray : .blue)
                                 }
-                            }) {
-                                Image(systemName: "arrow.left.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.blue)
+                                .padding()
+                                .disabled(transactionDescription.isEmpty) // Disable button when description is empty
                             }
-                            .padding()
+                        }
+                        .padding(.horizontal)
+                        .transition(.move(edge: .leading))
+                        .navigationTitle("New Transaction")
+                    } else {
+                        VStack(alignment: .leading) {
+                            Text("How much was it?")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+
+                            TextField("Enter Amount", text: $amount)
+                                .keyboardType(.decimalPad)
+                                .font(.largeTitle)
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                                .focused($isAmountFieldFocused)
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        isAmountFieldFocused = true
+                                    }
+                                }
+
+                            Text("What category is it?")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+                            
+                            SelectCategoryView(
+                                selectedCategory: $selectedCategory,
+                                isPresentingCategoryPopup: $isPresentingCategoryPopup
+                            )
+                            .padding(.bottom, 20)
+
+                            HStack {
+                                Button(action: {
+                                    withAnimation(.easeInOut) {
+                                        showDetails = false
+                                    }
+                                }) {
+                                    Image(systemName: "arrow.left.circle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(.blue)
+                                }
+                                .padding()
+
+                                Spacer()
+
+                                Button(action: addItem) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? .gray : .green)
+                                }
+                                .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
+                                .padding()
+                            }
 
                             Spacer()
-
-                            Button(action: addItem) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil ? .gray : .green)
-                            }
-                            .disabled(transactionDescription.isEmpty || amount.isEmpty || selectedCategory == nil)
-                            .padding()
                         }
-
-                        Spacer()
+                        .padding(.horizontal)
+                        .transition(.move(edge: .trailing))
                     }
-                    .padding(.horizontal)
-                    .transition(.move(edge: .trailing))
+                }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .onTapGesture {
+                    self.hideKeyboard()
                 }
             }
-            .navigationTitle("New Transaction")
         }
     }
 
@@ -133,6 +156,10 @@ struct NewTransaction: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
