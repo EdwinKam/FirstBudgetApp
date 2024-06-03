@@ -31,11 +31,6 @@ struct NewTransaction: View {
                                 .padding(.bottom, 20)
                                 .background(Color.clear)
                                 .focused($isDescriptionFieldFocused)
-                                .onAppear {
-                                    DispatchQueue.main.asyncAfter(deadline: .now()) {
-                                        isDescriptionFieldFocused = true
-                                    }
-                                }
 
                             HStack {
                                 Spacer()
@@ -72,12 +67,6 @@ struct NewTransaction: View {
                                 .padding(.bottom, 20)
                                 .padding(.leading, 20)
                                 .padding(.trailing, 20)
-                                .focused($isAmountFieldFocused)
-                                .onAppear {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        isAmountFieldFocused = true
-                                    }
-                                }
 
                             Text("What category is it?")
                                 .font(.largeTitle)
