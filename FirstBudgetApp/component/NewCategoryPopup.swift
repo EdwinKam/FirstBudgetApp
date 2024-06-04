@@ -18,7 +18,6 @@ struct NewCategoryPopup: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .onAppear {
-                    print(editFromCategory)
                     if let category = editFromCategory {
                         newCategoryName = category.name ?? ""
                     }

@@ -14,6 +14,7 @@ struct RootView: View {
     var body: some View {
         ZStack {
             if !showSignInView {
+//                SettingView()
                 ContentView(showSignInView: $showSignInView)
             }
         }

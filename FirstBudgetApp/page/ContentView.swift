@@ -6,12 +6,9 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showSignInView: Bool
 
-    // FetchRequest with dynamic predicate
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \TransactionItem.createdAt, ascending: false)],
-        animation: .default
-    ) private var items: FetchedResults<TransactionItem>
-    
+    // State variable to hold fetched items
+    @State private var items: [TransactionItem] = []
+
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
@@ -198,6 +195,18 @@ struct ContentView: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(.red)
             })
+        }
+        .onAppear {
+            fetchCoreDataTransactions()
+        }
+    }
+
+    private func fetchCoreDataTransactions() {
+        do {
+            let fetchedItems = try TransactionManager.shared.fetchFromCoreData()
+            items = fetchedItems
+        } catch {
+            print("Failed to fetch transactions: \(error.localizedDescription)")
         }
     }
 
