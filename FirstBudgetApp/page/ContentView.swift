@@ -149,7 +149,6 @@ struct ContentView: View {
                             NavigationLink(
                                 destination: NewTransaction().onDisappear {
                                     showOptions = false
-                                    fetchCoreDataTransactions() // Refresh data when NewTransaction disappears
                                 },
                                 label: {
                                     Text("Add New Transaction")
@@ -164,7 +163,6 @@ struct ContentView: View {
                                 NavigationLink(
                                     destination: NewTransaction(selectedCategory: category).onDisappear {
                                         showOptions = false
-                                        fetchCoreDataTransactions() // Refresh data when NewTransaction disappears
                                     },
                                     label: {
                                         Text(category.name ?? "Unknown")
@@ -200,6 +198,9 @@ struct ContentView: View {
         }
         .onAppear {
             fetchCoreDataTransactions()
+            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
+                fetchCoreDataTransactions()
+            }
         }
     }
 

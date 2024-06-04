@@ -86,7 +86,15 @@ class TransactionManager {
     // MARK: - Core Data Transaction Management
     
     func fetchFromCoreData() throws -> [TransactionItem] {
-        return try coreDataManager.fetchTransactions()
+        let viewContext = coreDataManager.viewContext
+        let fetchRequest: NSFetchRequest<TransactionItem> = TransactionItem.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TransactionItem.createdAt, ascending: false)]
+
+        do {
+            return try viewContext.fetch(fetchRequest)
+        } catch {
+            throw error
+        }
     }
     
     func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws {

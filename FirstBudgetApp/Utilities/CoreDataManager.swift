@@ -19,15 +19,4 @@ class CoreDataManager {
     var viewContext: NSManagedObjectContext {
         return persistenceController.container.viewContext
     }
-    
-    func fetchTransactions() throws -> [TransactionItem] {
-        let fetchRequest: NSFetchRequest<TransactionItem> = TransactionItem.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TransactionItem.createdAt, ascending: false)]
-        
-        do {
-            return try viewContext.fetch(fetchRequest)
-        } catch {
-            throw error
-        }
-    }
 }
