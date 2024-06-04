@@ -149,6 +149,7 @@ struct ContentView: View {
                             NavigationLink(
                                 destination: NewTransaction().onDisappear {
                                     showOptions = false
+                                    fetchCoreDataTransactions() // Refresh data when NewTransaction disappears
                                 },
                                 label: {
                                     Text("Add New Transaction")
@@ -163,6 +164,7 @@ struct ContentView: View {
                                 NavigationLink(
                                     destination: NewTransaction(selectedCategory: category).onDisappear {
                                         showOptions = false
+                                        fetchCoreDataTransactions() // Refresh data when NewTransaction disappears
                                     },
                                     label: {
                                         Text(category.name ?? "Unknown")

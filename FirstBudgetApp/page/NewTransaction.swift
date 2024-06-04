@@ -126,24 +126,17 @@ struct NewTransaction: View {
             return
         }
 
-        withAnimation {
-            let newItem = TransactionItem(context: viewContext)
-            newItem.transactionDescription = transactionDescription
-            newItem.amount = amountValue
-            newItem.category = category
-
-            do {
-                try viewContext.save()
-                transactionDescription = ""  // Clear the input fields after saving
-                amount = ""
-                selectedCategory = nil
-                print("Item added successfully")
-                presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
-            } catch {
-                let nsError = error as NSError
-                print("Unresolved error \(nsError), \(nsError.userInfo)")
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+        do {
+            try TransactionManager.shared.saveToCoreData(description: transactionDescription, amount: amountValue, category: category)
+            transactionDescription = ""  // Clear the input fields after saving
+            amount = ""
+            selectedCategory = nil
+            print("Item added successfully")
+            presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
 

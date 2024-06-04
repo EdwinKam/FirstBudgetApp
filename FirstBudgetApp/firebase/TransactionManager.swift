@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import CoreData
 
 struct TransactionDbItem {
     var id: String // Transaction ID
@@ -19,18 +20,18 @@ struct TransactionDbItem {
 
 class TransactionManager {
     static let shared = TransactionManager()
-        
-        // Firestore reference
-        private let db = Firestore.firestore()
-        
-        // Core Data manager reference
-        private let coreDataManager = CoreDataManager.shared
-        
-        private init() {}
+    
+    // Firestore reference
+    private let db = Firestore.firestore()
+    
+    // Core Data manager reference
+    private let coreDataManager = CoreDataManager.shared
+    
+    private init() {}
+
+    // MARK: - Firestore Transaction Management
     
     func createNewTransaction(auth: AuthDataResultModel, transaction: TransactionDbItem) {
-        let db = Firestore.firestore()
-        
         // Reference to the user's transactions collection
         let userTransactionDocRef = db.collection("users").document(auth.uid).collection("transactions").document(transaction.id)
         
@@ -53,8 +54,6 @@ class TransactionManager {
     }
 
     func getTransactions(auth: AuthDataResultModel) async throws -> [TransactionDbItem] {
-        let db = Firestore.firestore()
-        
         // Fetch all documents from the user's transactions collection
         let snapshot = try await db.collection("users").document(auth.uid).collection("transactions").getDocuments()
         
@@ -85,10 +84,19 @@ class TransactionManager {
     }
 
     // MARK: - Core Data Transaction Management
-        
+    
     func fetchFromCoreData() throws -> [TransactionItem] {
         return try coreDataManager.fetchTransactions()
     }
-
+    
+    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws {
+        let context = coreDataManager.viewContext
+        let newItem = TransactionItem(context: context)
+        newItem.transactionDescription = description
+        newItem.amount = amount
+        newItem.category = category
+        newItem.createdAt = Date()
+        
+        try context.save()
+    }
 }
-
