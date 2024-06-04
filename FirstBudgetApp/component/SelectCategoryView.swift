@@ -2,19 +2,15 @@ import SwiftUI
 import CoreData
 
 struct SelectCategoryView: View {
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default
-    ) private var categories: FetchedResults<TransactionCategory>
-
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default
-    ) private var transactions: FetchedResults<TransactionItem>
+    @Environment(\.managedObjectContext) private var viewContext
 
     @Binding var selectedCategory: TransactionCategory?
     @Binding var isPresentingCategoryPopup: Bool
     @State var categoryToEdit: TransactionCategory?
+
+    // State variables for categories and transactions
+    @State private var categories: [TransactionCategory] = []
+    @State private var transactions: [TransactionItem] = []
 
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
@@ -25,13 +21,10 @@ struct SelectCategoryView: View {
                     ForEach(rowCategories, id: \.self) { category in
                         CategoryCircleView(category: category, isSelected: category == selectedCategory)
                             .onTapGesture {
-                                print("got tap")
                                 selectedCategory = category
                             }
                             .onLongPressGesture {
-                                print("got long pressed")
                                 categoryToEdit = category // Set category to edit
-                                print(category)
                                 isPresentingCategoryPopup = true
                             }
                     }
@@ -64,9 +57,24 @@ struct SelectCategoryView: View {
         .sheet(isPresented: $isPresentingCategoryPopup) {
             NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory, editFromCategory: $categoryToEdit)
         }
+        .onAppear {
+            fetchCategoriesAndTransactions()
+            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
+                fetchCategoriesAndTransactions()
+            }
+        }
     }
 
-    private func sortCategoriesByPopularity(categories: FetchedResults<TransactionCategory>, transactions: FetchedResults<TransactionItem>) -> [TransactionCategory] {
+    private func fetchCategoriesAndTransactions() {
+        do {
+            categories = try CategoryManager.shared.fetchFromCoreData()
+            transactions = try TransactionManager.shared.fetchFromCoreData()
+        } catch {
+            print("Failed to fetch data: \(error.localizedDescription)")
+        }
+    }
+
+    private func sortCategoriesByPopularity(categories: [TransactionCategory], transactions: [TransactionItem]) -> [TransactionCategory] {
         let categoryCounts = transactions.reduce(into: [TransactionCategory: Int]()) { counts, transaction in
             if let category = transaction.category {
                 counts[category, default: 0] += 1

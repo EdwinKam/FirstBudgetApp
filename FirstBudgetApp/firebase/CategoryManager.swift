@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import CoreData
 
 struct TransactionDbCategory {
     var id: String // Category ID
@@ -19,6 +20,8 @@ class CategoryManager {
     static let shared = CategoryManager()
     
     private let db = Firestore.firestore()
+    
+    private let coreDataManager = CoreDataManager.shared
     
     private init() {}
     
@@ -78,5 +81,52 @@ class CategoryManager {
                 completion(.success(()))
             }
         }
+    }
+    
+    func fetchFromCoreData() throws -> [TransactionCategory] {
+        let viewContext = coreDataManager.viewContext
+        let fetchRequest: NSFetchRequest<TransactionCategory> = TransactionCategory.fetchRequest()
+
+        do {
+            return try viewContext.fetch(fetchRequest)
+        } catch {
+            throw error
+        }
+    }
+    
+    func addCategoryToCoreData(name: String) -> TransactionCategory {
+        let viewContext = coreDataManager.viewContext
+        let newCategoryItem = TransactionCategory(context: viewContext)
+        newCategoryItem.name = name
+        newCategoryItem.id = UUID()
+        let newCategory = newCategoryItem
+        do {
+            try viewContext.save()
+            return newCategory
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    func updateCategoryFromCoreData(category: TransactionCategory, name: String) -> TransactionCategory {
+        let viewContext = coreDataManager.viewContext
+        category.name = name
+        do {
+            try viewContext.save()
+            return category
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    func deleteFromCoreData(category: TransactionCategory) throws {
+        let context = coreDataManager.viewContext
+        context.delete(category)
+        
+        try context.save()
     }
 }

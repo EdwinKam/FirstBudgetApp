@@ -56,30 +56,10 @@ struct NewCategoryPopup: View {
     }
 
     private func addCategory(name: String) {
-        let newCategoryItem = TransactionCategory(context: viewContext)
-        newCategoryItem.name = name
-        newCategoryItem.id = UUID()
-        newCategory = newCategoryItem
-        do {
-            try viewContext.save()
-            print("Category added successfully")
-        } catch {
-            let nsError = error as NSError
-            print("Unresolved error \(nsError), \(nsError.userInfo)")
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
+        newCategory = CategoryManager.shared.addCategoryToCoreData(name: name)
     }
 
     private func updateCategory(category: TransactionCategory, name: String) {
-        category.name = name
-        do {
-            try viewContext.save()
-            newCategory = category
-            print("Category updated successfully")
-        } catch {
-            let nsError = error as NSError
-            print("Unresolved error \(nsError), \(nsError.userInfo)")
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
+        newCategory = CategoryManager.shared.updateCategoryFromCoreData(category: category, name: name)
     }
 }
