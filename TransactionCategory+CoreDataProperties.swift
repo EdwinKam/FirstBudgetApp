@@ -16,7 +16,7 @@ extension TransactionCategory {
         return NSFetchRequest<TransactionCategory>(entityName: "TransactionCategory")
     }
 
-    @NSManaged public var id: UUID?
+    @NSManaged public var id: UUID
     @NSManaged public var name: String?
     @NSManaged public var transactions: NSSet?
 

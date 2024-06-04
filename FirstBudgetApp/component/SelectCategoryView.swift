@@ -66,11 +66,13 @@ struct SelectCategoryView: View {
     }
 
     private func fetchCategoriesAndTransactions() {
-        do {
-            categories = try CategoryManager.shared.fetchFromCoreData()
-            transactions = try TransactionManager.shared.fetchFromCoreData()
-        } catch {
-            print("Failed to fetch data: \(error.localizedDescription)")
+        Task {
+            do {
+                categories = try await CategoryManager.shared.fetchFromCoreData()
+                transactions = try TransactionManager.shared.fetchFromCoreData()
+            } catch {
+                print("Failed to fetch data: \(error.localizedDescription)")
+            }
         }
     }
 

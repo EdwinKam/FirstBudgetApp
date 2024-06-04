@@ -27,47 +27,42 @@ class CategoryManager {
     
     // MARK: - Category Management
     
-    func createNewCategory(auth: AuthDataResultModel, name: String) {
+    private func addNewCategoryToFirebase(category: TransactionCategory) async throws {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
         let categoryId = UUID().uuidString
         let categoryData: [String: Any] = [
-            "id": categoryId,
-            "name": name
+            "id": category.id.uuidString,
+            "name": category.name ?? ""
         ]
         
         // Reference to the user's categories collection
         let userCategoriesRef = db.collection("users").document(auth.uid).collection("categories")
         
         // Add the new category document under user
-        userCategoriesRef.document(categoryId).setData(categoryData) { error in
-            if let error = error {
-                print("Error adding category: \(error.localizedDescription)")
-            } else {
-                print("Category successfully added!")
-            }
-        }
+        try await userCategoriesRef.document(categoryId).setData(categoryData)
     }
     
-    func fetchCategories(auth: AuthDataResultModel) async throws -> [TransactionDbCategory] {
-        // Reference to the user's categories collection
-        let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
-        
-        let categories: [TransactionDbCategory] = snapshot.documents.compactMap { document in
+    func fetchCategoriesFromFirebase() async throws -> [TransactionCategory] {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+            // Fetch from Firestore
+            let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
+            
+        let firestoreCategories: [TransactionCategory] = try snapshot.documents.compactMap { document in
             let data = document.data()
             
-            let id = data["id"] as? String
-            let name = data["name"] as? String
-            
-            guard let id = id, let name = name else {
-                return nil
+            guard let idString = data["id"] as? String,
+                  let name = data["name"] as? String,
+                  let id = UUID(uuidString: idString) else {
+                throw NSError(domain: "CategoryManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode category data"])
             }
             
-            return TransactionDbCategory(
-                id: id,
-                name: name
-            )
+            let category = TransactionCategory(context: coreDataManager.viewContext)
+            category.id = id
+            category.name = name
+            return category
         }
-        
-        return categories
+        return firestoreCategories
+            
     }
     
     func deleteCategory(auth: AuthDataResultModel, categoryId: String, completion: @escaping (Result<Void, Error>) -> Void) {
@@ -83,15 +78,16 @@ class CategoryManager {
         }
     }
     
-    func fetchFromCoreData() throws -> [TransactionCategory] {
-        let viewContext = coreDataManager.viewContext
-        let fetchRequest: NSFetchRequest<TransactionCategory> = TransactionCategory.fetchRequest()
-
-        do {
-            return try viewContext.fetch(fetchRequest)
-        } catch {
-            throw error
-        }
+    func fetchFromCoreData() async throws -> [TransactionCategory] {
+        try await fetchCategoriesFromFirebase()
+//        let viewContext = coreDataManager.viewContext
+//        let fetchRequest: NSFetchRequest<TransactionCategory> = TransactionCategory.fetchRequest()
+//
+//        do {
+//            return try viewContext.fetch(fetchRequest)
+//        } catch {
+//            throw error
+//        }
     }
     
     func addCategoryToCoreData(name: String) -> TransactionCategory {
@@ -102,6 +98,15 @@ class CategoryManager {
         let newCategory = newCategoryItem
         do {
             try viewContext.save()
+            // async task to add to firebase
+            Task {
+                do {
+                    try await self.addNewCategoryToFirebase(category: newCategory)
+                } catch {
+                    let nsError = error as NSError
+                    print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
+                }
+            }
             return newCategory
         } catch {
             let nsError = error as NSError
