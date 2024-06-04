@@ -99,4 +99,11 @@ class TransactionManager {
         
         try context.save()
     }
+    
+    func deleteFromCoreData(transaction: TransactionItem) throws {
+        let context = coreDataManager.viewContext
+        context.delete(transaction)
+        
+        try context.save()
+    }
 }
