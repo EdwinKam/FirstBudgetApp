@@ -40,15 +40,34 @@ class CategoryManager {
         return newCategory
     }
     
-    func fetchCategories() async throws -> [TransactionCategory] {
-        return try await fetchCategoriesFromFirebase()
+    func fetchCategories() throws -> [TransactionCategory] {
+        return try fetchFromCoreData()
+    }
+    
+    func deleteCategory(category: TransactionCategory) {
+        do {
+            // Call the async function without waiting for it
+            Task {
+                do {
+                    try await self.deleteCategoryFromFirebase(category: category)
+                    print("successfully delete from firebase")
+                } catch {
+                    let nsError = error as NSError
+                    print("Error deleting category from Firebase: \(nsError), \(nsError.userInfo)")
+                }
+            }
+            try deleteFromCoreData(category: category)
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
     }
     
     // MARK: - Category Management
     
     private func addNewCategoryToFirebase(category: TransactionCategory) async throws {
         let auth = try AuthManager.shared.getAuthenticatedUser()
-        let categoryId = UUID().uuidString
         let categoryData: [String: Any] = [
             "id": category.id.uuidString,
             "name": category.name ?? ""
@@ -58,14 +77,14 @@ class CategoryManager {
         let userCategoriesRef = db.collection("users").document(auth.uid).collection("categories")
         
         // Add the new category document under user
-        try await userCategoriesRef.document(categoryId).setData(categoryData)
+        try await userCategoriesRef.document(category.id.uuidString).setData(categoryData)
     }
     
-    func fetchCategoriesFromFirebase() async throws -> [TransactionCategory] {
+    private func fetchCategoriesFromFirebase() async throws -> [TransactionCategory] {
         let auth = try AuthManager.shared.getAuthenticatedUser()
-            // Fetch from Firestore
-            let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
-            
+        // Fetch from Firestore
+        let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
+        
         let firestoreCategories: [TransactionCategory] = try snapshot.documents.compactMap { document in
             let data = document.data()
             
@@ -81,23 +100,19 @@ class CategoryManager {
             return category
         }
         return firestoreCategories
-            
     }
     
-    func deleteCategory(auth: AuthDataResultModel, categoryId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    private func deleteCategoryFromFirebase(category: TransactionCategory) async throws {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        
         // Reference to the user's categories collection
         let userCategoriesRef = db.collection("users").document(auth.uid).collection("categories")
         
-        userCategoriesRef.document(categoryId).delete { error in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                completion(.success(()))
-            }
-        }
+        // Delete the category document under user
+        try await userCategoriesRef.document(category.id.uuidString).delete()
     }
     
-    // function to get from local core data
+    // MARK: -function to get from local core data
     
     private func addCategoryToCoreData(name: String) -> TransactionCategory {
         let viewContext = coreDataManager.viewContext
@@ -139,7 +154,7 @@ class CategoryManager {
         }
     }
     
-    func deleteFromCoreData(category: TransactionCategory) throws {
+    private func deleteFromCoreData(category: TransactionCategory) throws {
         let context = coreDataManager.viewContext
         context.delete(category)
         

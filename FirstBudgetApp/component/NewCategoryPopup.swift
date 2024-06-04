@@ -49,6 +49,19 @@ struct NewCategoryPopup: View {
                         .cornerRadius(8)
                 }
                 .disabled(newCategoryName.isEmpty)
+                
+                if editFromCategory != nil {
+                    Button(action: {
+                        deleteCategory(category: editFromCategory!)
+                        isPresented = false
+                    }) {
+                        Text("Delete")
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                }
             }
             .padding()
         }
@@ -61,5 +74,13 @@ struct NewCategoryPopup: View {
 
     private func updateCategory(category: TransactionCategory, name: String) {
         newCategory = CategoryManager.shared.updateCategoryFromCoreData(category: category, name: name)
+    }
+
+    private func deleteCategory(category: TransactionCategory) {
+        do {
+            try CategoryManager.shared.deleteCategory(category: category)
+        } catch {
+            print("Failed to delete category: \(error.localizedDescription)")
+        }
     }
 }

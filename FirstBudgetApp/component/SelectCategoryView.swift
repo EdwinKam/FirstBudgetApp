@@ -14,7 +14,6 @@ struct SelectCategoryView: View {
 
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
-
         VStack(alignment: .leading, spacing: 16) {
             ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
                 HStack {
@@ -72,7 +71,7 @@ struct SelectCategoryView: View {
     private func fetchCategoriesAndTransactions() {
         Task {
             do {
-                categories = try await CategoryManager.shared.fetchCategories()
+                categories = try CategoryManager.shared.fetchCategories()
                 print("done fetching all catgory in select category view")
                 transactions = try TransactionManager.shared.fetchFromCoreData()
             } catch {
@@ -87,7 +86,7 @@ struct SelectCategoryView: View {
                 counts[category, default: 0] += 1
             }
         }
-
+        print(categories)
         return categories.sorted { (category1, category2) -> Bool in
             let count1 = categoryCounts[category1] ?? 0
             let count2 = categoryCounts[category2] ?? 0
