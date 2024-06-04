@@ -25,6 +25,25 @@ class CategoryManager {
     
     private init() {}
     
+    // MARK: - public function
+    func addCatgory(name: String) -> TransactionCategory{
+        let newCategory = addCategoryToCoreData(name: name)
+        // async task to add to firebase
+        Task {
+            do {
+                try await self.addNewCategoryToFirebase(category: newCategory)
+            } catch {
+                let nsError = error as NSError
+                print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
+            }
+        }
+        return newCategory
+    }
+    
+    func fetchCategories() async throws -> [TransactionCategory] {
+        return try await fetchCategoriesFromFirebase()
+    }
+    
     // MARK: - Category Management
     
     private func addNewCategoryToFirebase(category: TransactionCategory) async throws {
@@ -78,19 +97,9 @@ class CategoryManager {
         }
     }
     
-    func fetchFromCoreData() async throws -> [TransactionCategory] {
-        try await fetchCategoriesFromFirebase()
-//        let viewContext = coreDataManager.viewContext
-//        let fetchRequest: NSFetchRequest<TransactionCategory> = TransactionCategory.fetchRequest()
-//
-//        do {
-//            return try viewContext.fetch(fetchRequest)
-//        } catch {
-//            throw error
-//        }
-    }
+    // function to get from local core data
     
-    func addCategoryToCoreData(name: String) -> TransactionCategory {
+    private func addCategoryToCoreData(name: String) -> TransactionCategory {
         let viewContext = coreDataManager.viewContext
         let newCategoryItem = TransactionCategory(context: viewContext)
         newCategoryItem.name = name
@@ -98,20 +107,22 @@ class CategoryManager {
         let newCategory = newCategoryItem
         do {
             try viewContext.save()
-            // async task to add to firebase
-            Task {
-                do {
-                    try await self.addNewCategoryToFirebase(category: newCategory)
-                } catch {
-                    let nsError = error as NSError
-                    print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
-                }
-            }
             return newCategory
         } catch {
             let nsError = error as NSError
             print("Unresolved error \(nsError), \(nsError.userInfo)")
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    private func fetchFromCoreData() throws -> [TransactionCategory] {
+        let viewContext = coreDataManager.viewContext
+        let fetchRequest: NSFetchRequest<TransactionCategory> = TransactionCategory.fetchRequest()
+
+        do {
+            return try viewContext.fetch(fetchRequest)
+        } catch {
+            throw error
         }
     }
     

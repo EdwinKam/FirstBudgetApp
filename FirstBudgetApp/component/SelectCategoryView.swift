@@ -31,6 +31,7 @@ struct SelectCategoryView: View {
                     if rowCategories.count < 4 {
                         PlusCircleView(isSelected: false)
                             .onTapGesture {
+                                print("press")
                                 selectedCategory = nil // Clear selected category for new addition
                                 categoryToEdit = nil
                                 isPresentingCategoryPopup = true
@@ -56,19 +57,23 @@ struct SelectCategoryView: View {
         .padding(20)
         .sheet(isPresented: $isPresentingCategoryPopup) {
             NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory, editFromCategory: $categoryToEdit)
+                .onDisappear() {
+                    fetchCategoriesAndTransactions()
+                }
         }
         .onAppear {
             fetchCategoriesAndTransactions()
-            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
-                fetchCategoriesAndTransactions()
-            }
+//            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
+//                fetchCategoriesAndTransactions()
+//            }
         }
     }
 
     private func fetchCategoriesAndTransactions() {
         Task {
             do {
-                categories = try await CategoryManager.shared.fetchFromCoreData()
+                categories = try await CategoryManager.shared.fetchCategories()
+                print("done fetching all catgory in select category view")
                 transactions = try TransactionManager.shared.fetchFromCoreData()
             } catch {
                 print("Failed to fetch data: \(error.localizedDescription)")
