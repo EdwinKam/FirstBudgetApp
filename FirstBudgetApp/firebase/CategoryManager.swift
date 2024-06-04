@@ -64,6 +64,45 @@ class CategoryManager {
         }
     }
     
+    // this func gets call when the app is boot, code in FirstBudgetApp.swift
+    func downloadCategories() async throws {
+        print("getting run")
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        
+        // Fetch from Firestore
+        let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
+        
+        // Extract categories from Firestore
+        let firestoreCategories: [TransactionCategory] = try await fetchCategoriesFromFirebase()
+        
+        // Replace everything in Core Data
+        let viewContext = coreDataManager.viewContext
+        let coreDataCategories = try fetchFromCoreData()
+        
+        // Delete existing categories
+        for category in coreDataCategories {
+            print("deleting")
+            print(category)
+            viewContext.delete(category)
+        }
+        
+        // Add new categories from Firestore
+        for category in firestoreCategories {
+            print("inserting")
+            print(category)
+            viewContext.insert(category)
+        }
+        
+        // Save context
+//        do {
+                    try viewContext.save()
+//                } catch {
+//                    let nsError = error as NSError
+//                    print("An error occurred while saving: \(nsError), \(nsError.userInfo)")
+//                    throw error
+//                }
+    }
+    
     // MARK: - Category Management
     
     private func addNewCategoryToFirebase(category: TransactionCategory) async throws {
