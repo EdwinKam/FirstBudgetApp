@@ -22,15 +22,15 @@ struct FirstBudgetAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     let persistenceController = PersistenceController.shared
     
-//    init() {
-//        Task {
-//            do {
-//                try await CategoryManager.shared.downloadCategories()
-//            } catch {
-//                print("Failed to download categories: \(error.localizedDescription)")
-//            }
-//        }
-//    }
+    init() {
+        Task {
+            do {
+                try await CategoryManager.shared.downloadCategories()
+            } catch {
+                print("Failed to download categories: \(error.localizedDescription)")
+            }
+        }
+    }
     
 
     var body: some Scene {

@@ -40,8 +40,8 @@ class CategoryManager {
         return newCategory
     }
     
-    func fetchCategories() throws -> [TransactionCategory] {
-        return try fetchFromCoreData()
+    func fetchCategories() async throws -> [TransactionCategory] {
+        return try await fetchCategoriesFromFirebase()
     }
     
     func deleteCategory(category: TransactionCategory) {
@@ -66,38 +66,38 @@ class CategoryManager {
     
     // this func gets call when the app is boot, code in FirstBudgetApp.swift
     func downloadCategories() async throws {
-        print("getting run")
-        let auth = try AuthManager.shared.getAuthenticatedUser()
-        
-        // Extract categories from Firestore
-        let firestoreCategories: [TransactionCategory] = try await fetchCategoriesFromFirebase()
-        
-        // Replace everything in Core Data
-        let viewContext = coreDataManager.viewContext
-        let coreDataCategories = try fetchFromCoreData()
-        
-        // Delete existing categories
-        for category in coreDataCategories {
-            print("deleting")
-            print(category)
-            viewContext.delete(category)
-        }
-        
-        // Add new categories from Firestore
-        for category in firestoreCategories {
-            print("inserting")
-            print(category)
-            viewContext.insert(category)
-        }
-        
-        // Save context
-//        do {
-                    try viewContext.save()
-//                } catch {
-//                    let nsError = error as NSError
-//                    print("An error occurred while saving: \(nsError), \(nsError.userInfo)")
-//                    throw error
-//                }
+//        print("syncing data from firebase")
+//        
+//        // Extract categories from Firestore
+//        let firestoreCategories: [TransactionCategory] = try await fetchCategoriesFromFirebase()
+//        
+//        // Replace everything in Core Data
+//        let viewContext = coreDataManager.viewContext
+//        let coreDataCategories = try fetchFromCoreData()
+//        
+//        // Delete existing categories
+//        print("deleting")
+//        CoreDataManager.shared.deleteAllPersistentStores()
+////        print(coreDataCategories.map { $0.name })
+////        for category in coreDataCategories {
+////            viewContext.delete(category)
+////        }
+//        
+//        // Add new categories from Firestore
+//        print("inserting")
+//        print(firestoreCategories.map { $0.name })
+//        for category in firestoreCategories {
+//            viewContext.insert(category)
+//        }
+//        
+//        // Save context
+////        do {
+//                    try viewContext.save()
+////                } catch {
+////                    let nsError = error as NSError
+////                    print("An error occurred while saving: \(nsError), \(nsError.userInfo)")
+////                    throw error
+////                }
     }
     
     // MARK: - Category Management
@@ -136,7 +136,7 @@ class CategoryManager {
             return category
         }
         print("firebase category")
-        print(firestoreCategories)
+        print(firestoreCategories.map { $0.name })
         return firestoreCategories
     }
     
