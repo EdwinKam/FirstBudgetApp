@@ -183,6 +183,7 @@ struct ContentView: View {
             .navigationBarItems(trailing: Button(action: {
                 do {
                     try AuthManager.shared.signOut()
+                    CoreDataManager.shared.deleteAllPersistentStores()
                     // Set showSignInView to true when signed out
                     showSignInView = true
                 } catch {

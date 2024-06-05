@@ -69,9 +69,6 @@ class CategoryManager {
         print("getting run")
         let auth = try AuthManager.shared.getAuthenticatedUser()
         
-        // Fetch from Firestore
-        let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
-        
         // Extract categories from Firestore
         let firestoreCategories: [TransactionCategory] = try await fetchCategoriesFromFirebase()
         
@@ -138,6 +135,8 @@ class CategoryManager {
             category.name = name
             return category
         }
+        print("firebase category")
+        print(firestoreCategories)
         return firestoreCategories
     }
     
