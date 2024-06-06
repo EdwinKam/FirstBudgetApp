@@ -18,7 +18,7 @@ struct SelectCategoryView: View {
             ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
                 HStack {
                     ForEach(rowCategories, id: \.self) { category in
-                        CategoryCircleView(category: category, isSelected: category == selectedCategory)
+                        CategoryCircleView(category: category, isSelected: category.id == selectedCategory?.id)
                             .onTapGesture {
                                 selectedCategory = category
                             }

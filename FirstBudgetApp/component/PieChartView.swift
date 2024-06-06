@@ -12,12 +12,16 @@ struct PieChartView: View {
     private static let chartColors: [Color] = [.red, .green, .blue, .orange, .purple]
 
     // Computed property to calculate category totals with optional filtering
-    private var categoryTotals: [TransactionCategory: Double] {
-        var totals: [TransactionCategory: Double] = [:]
+    private var categoryTotals: [UUID: (TransactionCategory, Double)] {
+        var totals: [UUID: (TransactionCategory, Double)] = [:]
         
         for item in transactionItems {
             if let category = item.category {
-                totals[category, default: 0.0] += item.amount
+                if let existingTotal = totals[category.id] {
+                    totals[category.id] = (category, existingTotal.1 + item.amount)
+                } else {
+                    totals[category.id] = (category, item.amount)
+                }
             }
         }
         return totals
@@ -31,8 +35,10 @@ struct PieChartView: View {
     var body: some View {
         ZStack {
             Chart {
-                ForEach(categoryTotals.sorted(by: { ($0.key.name ?? "") < ($1.key.name ?? "") }), id: \.key) { category, total in
-                    let isSelected = selectedCategory == category
+                ForEach(categoryTotals.sorted(by: { $0.value.0.name ?? "" < $1.value.0.name ?? "" }), id: \.key) { _, value in
+                    let category = value.0
+                    let total = value.1
+                    let isSelected = selectedCategory?.id == category.id
                     let outerRadius = isSelected ? 160 : 140 // Change radius if selected
                     let innerRadius = isSelected ? 90 : 80   // Change inner radius if selected
                     
@@ -76,7 +82,7 @@ struct PieChartView: View {
             
             // Overlay the total amount and category name in the middle of the chart
             VStack {
-                if let selectedCategory = selectedCategory, let total = categoryTotals[selectedCategory] {
+                if let selectedCategory = selectedCategory, let total = categoryTotals[selectedCategory.id]?.1 {
                     Text("\(selectedCategory.name ?? "Unknown")")
                         .font(.headline)
                         .foregroundColor(.gray)
@@ -98,13 +104,13 @@ struct PieChartView: View {
     
     private func determineSelectedCategory(from angle: Double) -> TransactionCategory? {
         // Find the category that corresponds to the angle
-        let sortedTotals = categoryTotals.sorted { ($0.key.name ?? "") < ($1.key.name ?? "") }
+        let sortedTotals = categoryTotals.sorted { $0.value.0.name ?? "" < $1.value.0.name ?? "" }
         var accumulatedAngle: Double = 0
 
-        for (category, total) in sortedTotals {
-            accumulatedAngle += total
+        for (_, value) in sortedTotals {
+            accumulatedAngle += value.1
             if angle <= accumulatedAngle {
-                return category
+                return value.0
             }
         }
         return nil
