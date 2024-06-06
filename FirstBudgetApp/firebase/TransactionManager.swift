@@ -27,11 +27,18 @@ class TransactionManager {
         return try fetchFromCoreData()
     }
     
-    func saveTransaction(description: String, amount: Double, category: TransactionCategory) async throws {
+    func saveTransaction(description: String, amount: Double, category: TransactionCategory) throws {
         print("trying to save to coredata")
         let transaction = try saveToCoreData(description: description, amount: amount, category: category)
         print("added to coredata")
-        try await createNewTransactionToFirebase(transaction: transaction)
+        Task {
+            do {
+                try await self.createNewTransactionToFirebase(transaction: transaction)
+            } catch {
+                let nsError = error as NSError
+                print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
+            }
+        }
         
     }
 

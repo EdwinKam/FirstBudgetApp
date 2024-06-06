@@ -97,7 +97,7 @@ struct NewTransaction: View {
 
                                 Button(action: {
                                     Task {
-                                        await addItem()
+                                        addItem()
                                     }
                                 }) {
                                     Image(systemName: "checkmark.circle.fill")
@@ -132,7 +132,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveToCoreData(description: transactionDescription, amount: amountValue, category: category)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil
