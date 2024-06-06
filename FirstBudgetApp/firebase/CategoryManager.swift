@@ -44,6 +44,10 @@ class CategoryManager {
         return try await fetchCategoriesFromFirebase()
     }
     
+    func fetchCategoryById(categoryId: String) async throws -> TransactionCategory? {
+        return try await fetchCategoryByIdFromFirebase(categoryId: categoryId)
+    }
+    
     func deleteCategory(category: TransactionCategory) {
         do {
             // Call the async function without waiting for it
@@ -106,7 +110,7 @@ class CategoryManager {
         let auth = try AuthManager.shared.getAuthenticatedUser()
         let categoryData: [String: Any] = [
             "id": category.id.uuidString,
-            "name": category.name ?? ""
+            "name": category.name
         ]
         
         // Reference to the user's categories collection
@@ -114,6 +118,33 @@ class CategoryManager {
         
         // Add the new category document under user
         try await userCategoriesRef.document(category.id.uuidString).setData(categoryData)
+    }
+
+    private func fetchCategoryByIdFromFirebase(categoryId: String) async throws -> TransactionCategory? {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        let db = Firestore.firestore()
+
+        // Fetch the category document from Firestore
+        let document = try await db.collection("users").document(auth.uid).collection("categories").document(categoryId).getDocument()
+        
+        guard let data = document.data() else {
+            print("Category not found")
+            return nil
+        }
+
+        guard let idString = data["id"] as? String,
+              let name = data["name"] as? String,
+              let id = UUID(uuidString: idString) else {
+            throw NSError(domain: "CategoryManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode category data"])
+        }
+
+        let category = TransactionCategory(context: coreDataManager.viewContext)
+        category.id = id
+        category.name = name
+
+        print("Fetched category from Firebase: \(category.name)")
+
+        return category
     }
     
     private func fetchCategoriesFromFirebase() async throws -> [TransactionCategory] {

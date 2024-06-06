@@ -73,7 +73,7 @@ struct SelectCategoryView: View {
             do {
                 categories = try await CategoryManager.shared.fetchCategories()
                 print("done fetching all catgory in select category view")
-                transactions = try TransactionManager.shared.fetchFromCoreData()
+                transactions = try await TransactionManager.shared.fetchTransactions()
             } catch {
                 print("Failed to fetch data: \(error.localizedDescription)")
             }
@@ -110,7 +110,7 @@ struct CategoryCircleView: View {
 
     var body: some View {
         VStack {
-            let firstLetter = category.name?.prefix(1) ?? "?"
+            let firstLetter = category.name.prefix(1)
             Text(String(firstLetter))
                 .font(.headline)
                 .frame(width: 40, height: 40)
@@ -121,7 +121,7 @@ struct CategoryCircleView: View {
                     Circle()
                         .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
                 )
-            Text(category.name ?? "")
+            Text(category.name)
                 .font(.caption)
                 .foregroundColor(.primary)
         }

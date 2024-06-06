@@ -95,7 +95,11 @@ struct NewTransaction: View {
 
                                 Spacer()
 
-                                Button(action: addItem) {
+                                Button(action: {
+                                    Task {
+                                        await addItem()
+                                    }
+                                }) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .resizable()
                                         .frame(width: 50, height: 50)
@@ -119,13 +123,14 @@ struct NewTransaction: View {
         }
     }
 
-    private func addItem() {
+    private func addItem() { // this function cant be async somehow
+        // it will say something trying to update the UI from non main thread
+        print("trying to add transaction in NewTransaction")
         guard let amountValue = Double(amount),
               !transactionDescription.isEmpty,
               let category = selectedCategory else {
             return
         }
-
         do {
             try TransactionManager.shared.saveToCoreData(description: transactionDescription, amount: amountValue, category: category)
             transactionDescription = ""  // Clear the input fields after saving

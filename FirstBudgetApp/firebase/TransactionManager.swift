@@ -10,14 +10,6 @@ import FirebaseFirestore
 import FirebaseAuth
 import CoreData
 
-struct TransactionDbItem {
-    var id: String // Transaction ID
-    var amount: Double
-    var description: String
-    var date: Date
-    // Add other fields as necessary
-}
-
 class TransactionManager {
     static let shared = TransactionManager()
     
@@ -28,56 +20,82 @@ class TransactionManager {
     private let coreDataManager = CoreDataManager.shared
     
     private init() {}
+    
+    func fetchTransactions() throws -> [TransactionItem] {
+        print("called fetchTransactions")
+//        try await fetchTransactionsFromFirebase()
+        return try fetchFromCoreData()
+    }
+    
+    func saveTransaction(description: String, amount: Double, category: TransactionCategory) async throws {
+        print("trying to save to coredata")
+        let transaction = try saveToCoreData(description: description, amount: amount, category: category)
+        print("added to coredata")
+        try await createNewTransactionToFirebase(transaction: transaction)
+        
+    }
 
     // MARK: - Firestore Transaction Management
     
-    func createNewTransaction(auth: AuthDataResultModel, transaction: TransactionDbItem) {
-        // Reference to the user's transactions collection
-        let userTransactionDocRef = db.collection("users").document(auth.uid).collection("transactions").document(transaction.id)
-        
-        // Transaction data
-        let transactionData: [String: Any] = [
-            "id": transaction.id,
-            "amount": transaction.amount,
-            "description": transaction.description,
-            "date": Timestamp(date: transaction.date)
-        ]
-        
-        // Add the new transaction document under user
-        userTransactionDocRef.setData(transactionData) { error in
-            if let error = error {
-                print("Error adding transaction: \(error.localizedDescription)")
-            } else {
-                print("Transaction successfully added!")
-            }
-        }
-    }
+    func createNewTransactionToFirebase(transaction: TransactionItem) async throws {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        let db = Firestore.firestore()
 
-    func getTransactions(auth: AuthDataResultModel) async throws -> [TransactionDbItem] {
+        // Prepare the data to be saved
+        let transactionData: [String: Any] = [
+            "id": transaction.id.uuidString,
+            "amount": transaction.amount,
+            "description": transaction.transactionDescription,
+            "createdAt": Timestamp(date: transaction.createdAt ?? Date()),
+            "categoryId": transaction.category?.id.uuidString ?? ""
+        ]
+
+        // Reference to the user's transactions collection
+        let userTransactionsRef = db.collection("users").document(auth.uid).collection("transactions")
+
+        // Add the new transaction document under user
+        try await userTransactionsRef.document(transaction.id.uuidString).setData(transactionData)
+        
+        print("Transaction added successfully to Firebase")
+    }
+    
+    private func fetchTransactionsFromFirebase() async throws -> [TransactionItem] {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        let db = Firestore.firestore()
+
         // Fetch all documents from the user's transactions collection
         let snapshot = try await db.collection("users").document(auth.uid).collection("transactions").getDocuments()
         
-        let transactions: [TransactionDbItem] = snapshot.documents.compactMap { document in
+        var transactions: [TransactionItem] = []
+        
+        for document in snapshot.documents {
             let data = document.data()
             
-            let id = data["id"] as? String
-            let amount = data["amount"] as? Double
-            let description = data["description"] as? String
-            let timestamp = data["date"] as? Timestamp
-            
-            guard let id = id,
-                  let amount = amount,
-                  let description = description,
-                  let timestamp = timestamp else {
-                return nil
+            guard let idString = data["id"] as? String,
+                  let id = UUID(uuidString: idString),
+                  let amount = data["amount"] as? Double,
+                  let description = data["description"] as? String,
+                  let categoryId = data["categoryId"] as? String,
+                  let createdAt = data["createdAt"] as? Timestamp else {
+                throw NSError(domain: "TransactionManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode transaction data"])
             }
             
-            return TransactionDbItem(
-                id: id,
-                amount: amount,
-                description: description,
-                date: timestamp.dateValue()
-            )
+            // Fetch the category asynchronously
+            let category: TransactionCategory?
+            do {
+                category = try await CategoryManager.shared.fetchCategoryById(categoryId: categoryId)
+            } catch {
+                print("Failed to fetch category: \(categoryId), \(error.localizedDescription)")
+                category = nil
+            }
+            
+            let transaction = TransactionItem(context: coreDataManager.viewContext)
+            transaction.id = id
+            transaction.amount = amount
+            transaction.transactionDescription = description
+            transaction.createdAt = createdAt.dateValue()
+            transaction.category = category
+            transactions.append(transaction)
         }
         
         return transactions
@@ -97,15 +115,17 @@ class TransactionManager {
         }
     }
     
-    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws {
+    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws -> TransactionItem{
         let context = coreDataManager.viewContext
         let newItem = TransactionItem(context: context)
         newItem.transactionDescription = description
         newItem.amount = amount
         newItem.category = category
         newItem.createdAt = Date()
+        newItem.id = UUID()
         
         try context.save()
+        return newItem
     }
     
     func deleteFromCoreData(transaction: TransactionItem) throws {
