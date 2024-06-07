@@ -1,17 +1,15 @@
 import SwiftUI
 import CoreData
 import Charts
+import FirebaseFirestore
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showSignInView: Bool
 
-    // FetchRequest with dynamic predicate
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \TransactionItem.createdAt, ascending: false)],
-        animation: .default
-    ) private var items: FetchedResults<TransactionItem>
-    
+    // State variable to hold fetched transaction items
+    @StateObject private var transactionState = TransactionState()
+
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
@@ -23,7 +21,7 @@ struct ContentView: View {
         let calendar = Calendar.current
         let now = currentDate
 
-        return items.filter { item in
+        return transactionState.transactionItems.filter { item in
             guard let createdAt = item.createdAt else { return false }
 
             switch selectedTimePeriod {
@@ -186,6 +184,7 @@ struct ContentView: View {
             .navigationBarItems(trailing: Button(action: {
                 do {
                     try AuthManager.shared.signOut()
+                    CoreDataManager.shared.deleteAllPersistentStores()
                     // Set showSignInView to true when signed out
                     showSignInView = true
                 } catch {
@@ -199,11 +198,23 @@ struct ContentView: View {
                     .foregroundColor(.red)
             })
         }
+        .task {
+            TransactionManager.shared.transactionState = transactionState
+            await fetchFirebaseTransactions()
+        }
+    }
+
+    private func fetchFirebaseTransactions() async {
+        do {
+            try await TransactionManager.shared.fetchTransactions()
+        } catch {
+            print("Failed to fetch transactions from Firebase: \(error.localizedDescription)")
+        }
     }
 
     private func selectedCategory(for name: String?) -> TransactionCategory? {
         guard let name = name else { return nil }
-        return items.first(where: { $0.category?.name == name })?.category
+        return transactionState.transactionItems.first(where: { $0.category?.name == name })?.category
     }
 
     private func adjustDate(by value: Int) {

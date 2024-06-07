@@ -2,7 +2,7 @@
 //  TransactionCategory+CoreDataProperties.swift
 //  FirstBudgetApp
 //
-//  Created by Edwin Kam on 5/26/24.
+//  Created by Edwin Kam on 6/5/24.
 //
 //
 
@@ -15,9 +15,9 @@ extension TransactionCategory {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<TransactionCategory> {
         return NSFetchRequest<TransactionCategory>(entityName: "TransactionCategory")
     }
-
-    @NSManaged public var id: UUID?
-    @NSManaged public var name: String?
+    
+    @NSManaged public var id: UUID
+    @NSManaged public var name: String
     @NSManaged public var transactions: NSSet?
 
 }

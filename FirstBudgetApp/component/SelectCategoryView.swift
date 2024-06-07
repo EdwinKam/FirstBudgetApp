@@ -2,42 +2,35 @@ import SwiftUI
 import CoreData
 
 struct SelectCategoryView: View {
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default
-    ) private var categories: FetchedResults<TransactionCategory>
-
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default
-    ) private var transactions: FetchedResults<TransactionItem>
+    @Environment(\.managedObjectContext) private var viewContext
 
     @Binding var selectedCategory: TransactionCategory?
     @Binding var isPresentingCategoryPopup: Bool
     @State var categoryToEdit: TransactionCategory?
 
+    // State variables for categories and transactions
+    @State private var categories: [TransactionCategory] = []
+    @State private var transactions: [TransactionItem] = []
+
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
-
         VStack(alignment: .leading, spacing: 16) {
             ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
                 HStack {
                     ForEach(rowCategories, id: \.self) { category in
-                        CategoryCircleView(category: category, isSelected: category == selectedCategory)
+                        CategoryCircleView(category: category, isSelected: category.id == selectedCategory?.id)
                             .onTapGesture {
-                                print("got tap")
                                 selectedCategory = category
                             }
                             .onLongPressGesture {
-                                print("got long pressed")
                                 categoryToEdit = category // Set category to edit
-                                print(category)
                                 isPresentingCategoryPopup = true
                             }
                     }
                     if rowCategories.count < 4 {
                         PlusCircleView(isSelected: false)
                             .onTapGesture {
+                                print("press")
                                 selectedCategory = nil // Clear selected category for new addition
                                 categoryToEdit = nil
                                 isPresentingCategoryPopup = true
@@ -63,16 +56,38 @@ struct SelectCategoryView: View {
         .padding(20)
         .sheet(isPresented: $isPresentingCategoryPopup) {
             NewCategoryPopup(isPresented: $isPresentingCategoryPopup, newCategory: $selectedCategory, editFromCategory: $categoryToEdit)
+                .onDisappear() {
+                    fetchCategoriesAndTransactions()
+                }
+        }
+        .onAppear {
+            fetchCategoriesAndTransactions()
+//            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
+//                fetchCategoriesAndTransactions()
+//            }
         }
     }
 
-    private func sortCategoriesByPopularity(categories: FetchedResults<TransactionCategory>, transactions: FetchedResults<TransactionItem>) -> [TransactionCategory] {
+    private func fetchCategoriesAndTransactions() {
+        Task {
+            do {
+                categories = try await CategoryManager.shared.fetchCategories()
+                print("done fetching all catgory in select category view")
+                transactions = try await TransactionManager.shared.fetchTransactions()
+            } catch {
+                print("Failed to fetch data: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func sortCategoriesByPopularity(categories: [TransactionCategory], transactions: [TransactionItem]) -> [TransactionCategory] {
         let categoryCounts = transactions.reduce(into: [TransactionCategory: Int]()) { counts, transaction in
             if let category = transaction.category {
                 counts[category, default: 0] += 1
             }
         }
-
+        print("print sort popularity category")
+        print(categories.map { $0.name })
         return categories.sorted { (category1, category2) -> Bool in
             let count1 = categoryCounts[category1] ?? 0
             let count2 = categoryCounts[category2] ?? 0
@@ -95,7 +110,7 @@ struct CategoryCircleView: View {
 
     var body: some View {
         VStack {
-            let firstLetter = category.name?.prefix(1) ?? "?"
+            let firstLetter = category.name.prefix(1)
             Text(String(firstLetter))
                 .font(.headline)
                 .frame(width: 40, height: 40)
@@ -106,7 +121,7 @@ struct CategoryCircleView: View {
                     Circle()
                         .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
                 )
-            Text(category.name ?? "")
+            Text(category.name)
                 .font(.caption)
                 .foregroundColor(.primary)
         }

@@ -54,14 +54,12 @@ struct EditTransactionPopup: View {
 
     private func deleteTransaction() {
         withAnimation {
-            viewContext.delete(transaction)
             do {
-                try viewContext.save()
+                try TransactionManager.shared.deleteTransaction(transaction: transaction)
                 presentationMode.wrappedValue.dismiss()
             } catch {
                 let nsError = error as NSError
-                print("Unresolved error \(nsError), \(nsError.userInfo)")
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("cant delete transaction error \(nsError), \(nsError.userInfo)")
             }
         }
     }

@@ -15,6 +15,16 @@ struct RootView: View {
         ZStack {
             if !showSignInView {
                 ContentView(showSignInView: $showSignInView)
+                    .onAppear() {
+                        Task {
+                            do {
+                                try await CategoryManager.shared.downloadCategories()
+                                print("downloaded from firebase")
+                            } catch {
+                                print("Failed to download categories: \(error.localizedDescription)")
+                            }
+                        }
+                    }
             }
         }
         .onAppear {

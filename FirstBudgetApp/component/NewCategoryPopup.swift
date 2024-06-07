@@ -18,7 +18,6 @@ struct NewCategoryPopup: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .onAppear {
-                    print(editFromCategory)
                     if let category = editFromCategory {
                         newCategoryName = category.name ?? ""
                     }
@@ -50,6 +49,19 @@ struct NewCategoryPopup: View {
                         .cornerRadius(8)
                 }
                 .disabled(newCategoryName.isEmpty)
+                
+                if editFromCategory != nil {
+                    Button(action: {
+                        deleteCategory(category: editFromCategory!)
+                        isPresented = false
+                    }) {
+                        Text("Delete")
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                }
             }
             .padding()
         }
@@ -57,30 +69,18 @@ struct NewCategoryPopup: View {
     }
 
     private func addCategory(name: String) {
-        let newCategoryItem = TransactionCategory(context: viewContext)
-        newCategoryItem.name = name
-        newCategoryItem.id = UUID()
-        newCategory = newCategoryItem
-        do {
-            try viewContext.save()
-            print("Category added successfully")
-        } catch {
-            let nsError = error as NSError
-            print("Unresolved error \(nsError), \(nsError.userInfo)")
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
+        newCategory = CategoryManager.shared.addCatgory(name: name)
     }
 
     private func updateCategory(category: TransactionCategory, name: String) {
-        category.name = name
+        newCategory = CategoryManager.shared.updateCategory(category: category, name: name)
+    }
+
+    private func deleteCategory(category: TransactionCategory) {
         do {
-            try viewContext.save()
-            newCategory = category
-            print("Category updated successfully")
+            try CategoryManager.shared.deleteCategory(category: category)
         } catch {
-            let nsError = error as NSError
-            print("Unresolved error \(nsError), \(nsError.userInfo)")
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            print("Failed to delete category: \(error.localizedDescription)")
         }
     }
 }

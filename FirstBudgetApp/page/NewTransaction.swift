@@ -95,7 +95,11 @@ struct NewTransaction: View {
 
                                 Spacer()
 
-                                Button(action: addItem) {
+                                Button(action: {
+                                    Task {
+                                        addItem()
+                                    }
+                                }) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .resizable()
                                         .frame(width: 50, height: 50)
@@ -119,31 +123,25 @@ struct NewTransaction: View {
         }
     }
 
-    private func addItem() {
+    private func addItem() { // this function cant be async somehow
+        // it will say something trying to update the UI from non main thread
+        print("trying to add transaction in NewTransaction")
         guard let amountValue = Double(amount),
               !transactionDescription.isEmpty,
               let category = selectedCategory else {
             return
         }
-
-        withAnimation {
-            let newItem = TransactionItem(context: viewContext)
-            newItem.transactionDescription = transactionDescription
-            newItem.amount = amountValue
-            newItem.category = category
-
-            do {
-                try viewContext.save()
-                transactionDescription = ""  // Clear the input fields after saving
-                amount = ""
-                selectedCategory = nil
-                print("Item added successfully")
-                presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
-            } catch {
-                let nsError = error as NSError
-                print("Unresolved error \(nsError), \(nsError.userInfo)")
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+        do {
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category)
+            transactionDescription = ""  // Clear the input fields after saving
+            amount = ""
+            selectedCategory = nil
+            print("Item added successfully")
+            presentationMode.wrappedValue.dismiss()  // Dismiss the view and go back to ContentView
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
 
