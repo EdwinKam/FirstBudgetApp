@@ -10,6 +10,10 @@ import FirebaseFirestore
 import FirebaseAuth
 import CoreData
 
+class TransactionState: ObservableObject {
+    @Published var transactionItems: [TransactionItem] = []
+}
+
 class TransactionManager {
     static let shared = TransactionManager()
     
@@ -20,17 +24,28 @@ class TransactionManager {
     private let coreDataManager = CoreDataManager.shared
     
     private init() {}
+
+    // Dependency injection of TransactionState
+    var transactionState: TransactionState?
     
     func fetchTransactions() async throws -> [TransactionItem] {
         print("called fetchTransactions")
-        return try await fetchTransactionsFromFirebase()
-//        return try fetchFromCoreData()
+        let transactions = try await fetchTransactionsFromFirebase()
+        // Update the global state
+        DispatchQueue.main.async {
+            self.transactionState?.transactionItems = transactions
+        }
+        return transactions
     }
     
     func saveTransaction(description: String, amount: Double, category: TransactionCategory) throws {
         print("trying to save to coredata")
         let transaction = try saveToCoreData(description: description, amount: amount, category: category)
         print("added to coredata")
+        // Update the global state
+        DispatchQueue.main.async {
+            self.transactionState?.transactionItems.append(transaction)
+        }
         Task {
             do {
                 try await self.createNewTransactionToFirebase(transaction: transaction)
@@ -39,19 +54,22 @@ class TransactionManager {
                 print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
             }
         }
-        
     }
     
     func deleteTransaction(transaction: TransactionItem) throws {
         Task {
             do {
                 try await self.deleteTransactionFromFirebase(transactionId: transaction.id)
+                // Update the global state
+                DispatchQueue.main.async {
+                    self.transactionState?.transactionItems.removeAll { $0.id == transaction.id }
+                }
             } catch {
                 let nsError = error as NSError
-                print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
+                print("Error deleting transaction from Firebase: \(nsError), \(nsError.userInfo)")
             }
         }
-        
+        // Optionally delete from Core Data if needed
 //        try deleteFromCoreData(transaction: transaction)
     }
 
@@ -148,7 +166,7 @@ class TransactionManager {
         }
     }
     
-    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws -> TransactionItem{
+    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws -> TransactionItem {
         let context = coreDataManager.viewContext
         let newItem = TransactionItem(context: context)
         newItem.transactionDescription = description

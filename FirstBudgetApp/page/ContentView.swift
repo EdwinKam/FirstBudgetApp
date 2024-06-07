@@ -7,8 +7,8 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showSignInView: Bool
 
-    // State variable to hold fetched items
-    @State private var items: [TransactionItem] = []
+    // State variable to hold fetched transaction items
+    @StateObject private var transactionState = TransactionState()
 
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
@@ -21,7 +21,7 @@ struct ContentView: View {
         let calendar = Calendar.current
         let now = currentDate
 
-        return items.filter { item in
+        return transactionState.transactionItems.filter { item in
             guard let createdAt = item.createdAt else { return false }
 
             switch selectedTimePeriod {
@@ -199,13 +199,14 @@ struct ContentView: View {
             })
         }
         .task {
+            TransactionManager.shared.transactionState = transactionState
             await fetchFirebaseTransactions()
         }
     }
 
     private func fetchFirebaseTransactions() async {
         do {
-            items = try await TransactionManager.shared.fetchTransactions()
+            try await TransactionManager.shared.fetchTransactions()
         } catch {
             print("Failed to fetch transactions from Firebase: \(error.localizedDescription)")
         }
@@ -213,7 +214,7 @@ struct ContentView: View {
 
     private func selectedCategory(for name: String?) -> TransactionCategory? {
         guard let name = name else { return nil }
-        return items.first(where: { $0.category?.name == name })?.category
+        return transactionState.transactionItems.first(where: { $0.category?.name == name })?.category
     }
 
     private func adjustDate(by value: Int) {
