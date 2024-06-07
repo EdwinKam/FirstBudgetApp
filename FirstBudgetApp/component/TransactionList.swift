@@ -6,6 +6,14 @@ struct TransactionList: View {
     var filteredByCategory: TransactionCategory?
     @State private var selectedItem: TransactionItem?
 
+    // Date formatter to format the date
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium // You can customize the date style as needed
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -13,14 +21,20 @@ struct TransactionList: View {
                     ForEach(filteredItems) { item in
                         HStack {
                             VStack(alignment: .leading) {
-                                Text("\(item.transactionDescription ?? "No Description")")
+                                Text("\(item.transactionDescription)")
+                                if let date = item.createdAt {
+                                    Text(dateFormatter.string(from: date))
+                                        .foregroundColor(.secondary)
+                                        .font(.subheadline)
+                                }
+                            }
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("\(item.amount, specifier: "%.2f")")
                                 Text("\(item.category?.name ?? "No Category")")
                                     .foregroundColor(.gray)
                                     .font(.subheadline)
                             }
-                            Spacer()
-                            Text("\(item.amount, specifier: "%.2f")")
-                                .alignmentGuide(.trailing) { d in d[.trailing] }
                         }
                         .padding() // Add padding inside each item
                         .background(
@@ -57,4 +71,18 @@ struct TransactionList: View {
             return Array(items)
         }
     }
+}
+
+#Preview {
+    // Provide a mock TransactionItem for preview purposes
+    let context = PersistenceController.preview.container.viewContext
+    let transaction = TransactionItem(context: context)
+    transaction.transactionDescription = "Sample Transaction"
+    transaction.amount = 100.0
+    transaction.category = TransactionCategory(context: context)
+    transaction.category?.name = "Sample Category"
+    transaction.createdAt = Date()
+
+    return TransactionList(items: [transaction], filteredByCategory: nil)
+        .environment(\.managedObjectContext, context)
 }
