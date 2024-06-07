@@ -48,6 +48,19 @@ class CategoryManager {
         return try await fetchCategoryByIdFromFirebase(categoryId: categoryId)
     }
     
+    func updateCategory(category: TransactionCategory, name: String) -> TransactionCategory{
+        let newCategory = updateCategoryFromCoreData(category: category, name: name)
+        Task {
+            do {
+                try await self.addNewCategoryToFirebase(category: newCategory)
+            } catch {
+                let nsError = error as NSError
+                print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
+            }
+        }
+        return newCategory
+    }
+    
     func deleteCategory(category: TransactionCategory) {
         do {
             // Call the async function without waiting for it

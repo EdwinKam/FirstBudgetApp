@@ -73,7 +73,7 @@ struct NewCategoryPopup: View {
     }
 
     private func updateCategory(category: TransactionCategory, name: String) {
-        newCategory = CategoryManager.shared.updateCategoryFromCoreData(category: category, name: name)
+        newCategory = CategoryManager.shared.updateCategory(category: category, name: name)
     }
 
     private func deleteCategory(category: TransactionCategory) {
