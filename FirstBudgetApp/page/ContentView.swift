@@ -1,6 +1,7 @@
 import SwiftUI
 import CoreData
 import Charts
+import FirebaseFirestore
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -197,20 +198,16 @@ struct ContentView: View {
                     .foregroundColor(.red)
             })
         }
-        .onAppear {
-            fetchCoreDataTransactions()
-            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewContext, queue: .main) { _ in
-                fetchCoreDataTransactions()
-            }
+        .task {
+            await fetchFirebaseTransactions()
         }
     }
 
-    private func fetchCoreDataTransactions() {
+    private func fetchFirebaseTransactions() async {
         do {
-            let fetchedItems = try TransactionManager.shared.fetchFromCoreData()
-            items = fetchedItems
+            items = try await TransactionManager.shared.fetchTransactions()
         } catch {
-            print("Failed to fetch transactions: \(error.localizedDescription)")
+            print("Failed to fetch transactions from Firebase: \(error.localizedDescription)")
         }
     }
 

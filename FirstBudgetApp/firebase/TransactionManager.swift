@@ -21,10 +21,10 @@ class TransactionManager {
     
     private init() {}
     
-    func fetchTransactions() throws -> [TransactionItem] {
+    func fetchTransactions() async throws -> [TransactionItem] {
         print("called fetchTransactions")
-//        try await fetchTransactionsFromFirebase()
-        return try fetchFromCoreData()
+        return try await fetchTransactionsFromFirebase()
+//        return try fetchFromCoreData()
     }
     
     func saveTransaction(description: String, amount: Double, category: TransactionCategory) throws {
@@ -52,7 +52,7 @@ class TransactionManager {
             }
         }
         
-        try deleteFromCoreData(transaction: transaction)
+//        try deleteFromCoreData(transaction: transaction)
     }
 
     // MARK: - Firestore Transaction Management
