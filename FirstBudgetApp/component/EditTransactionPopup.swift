@@ -55,7 +55,7 @@ struct EditTransactionPopup: View {
     private func deleteTransaction() {
         withAnimation {
             do {
-                try TransactionManager.shared.deleteFromCoreData(transaction: transaction)
+                try TransactionManager.shared.deleteTransaction(transaction: transaction)
                 presentationMode.wrappedValue.dismiss()
             } catch {
                 let nsError = error as NSError

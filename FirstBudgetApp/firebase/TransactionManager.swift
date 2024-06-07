@@ -41,6 +41,19 @@ class TransactionManager {
         }
         
     }
+    
+    func deleteTransaction(transaction: TransactionItem) throws {
+        Task {
+            do {
+                try await self.deleteTransactionFromFirebase(transactionId: transaction.id)
+            } catch {
+                let nsError = error as NSError
+                print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
+            }
+        }
+        
+        try deleteFromCoreData(transaction: transaction)
+    }
 
     // MARK: - Firestore Transaction Management
     
@@ -106,6 +119,19 @@ class TransactionManager {
         }
         
         return transactions
+    }
+    
+    func deleteTransactionFromFirebase(transactionId: UUID) async throws {
+        let auth = try AuthManager.shared.getAuthenticatedUser()
+        let db = Firestore.firestore()
+
+        // Reference to the user's transactions collection
+        let userTransactionsRef = db.collection("users").document(auth.uid).collection("transactions")
+
+        // Delete the transaction document
+        try await userTransactionsRef.document(transactionId.uuidString).delete()
+        
+        print("Transaction deleted successfully from Firebase")
     }
 
     // MARK: - Core Data Transaction Management
