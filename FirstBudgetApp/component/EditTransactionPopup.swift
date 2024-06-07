@@ -6,50 +6,49 @@ struct EditTransactionPopup: View {
     var transaction: TransactionItem
 
     var body: some View {
-        VStack {
-            Text("Edit Transaction")
-                .font(.headline)
-                .foregroundColor(Color(.label)) // Adapts to dark mode
+        ZStack {
+            Color(.systemBackground)
+                .edgesIgnoringSafeArea(.all) // Ensures the entire sheet background adapts to dark mode
+
+            VStack(spacing: 16) {
+                Text("Edit Transaction")
+                    .font(.headline)
+                    .foregroundColor(Color(.label)) // Adapts to dark mode
+                    .padding(.top, 20)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Description: \(transaction.transactionDescription)")
+                        .foregroundColor(Color(.label)) // Adapts to dark mode
+                    Text("Amount: \(transaction.amount, specifier: "%.2f")")
+                        .foregroundColor(Color(.label)) // Adapts to dark mode
+                    Text("Category: \(transaction.category?.name ?? "No Category")")
+                        .foregroundColor(Color(.label)) // Adapts to dark mode
+                }
                 .padding()
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Description: \(transaction.transactionDescription ?? "No Description")")
-                    .foregroundColor(Color(.label)) // Adapts to dark mode
-                Text("Amount: \(transaction.amount, specifier: "%.2f")")
-                    .foregroundColor(Color(.label)) // Adapts to dark mode
-                Text("Category: \(transaction.category?.name ?? "No Category")")
-                    .foregroundColor(Color(.label)) // Adapts to dark mode
-            }
-            .padding()
+                HStack {
+                    Button(action: deleteTransaction) {
+                        Text("Delete")
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
 
-            Button(action: deleteTransaction) {
-                Text("Delete")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Close")
+                            .padding()
+                            .background(Color(.systemGray)) // Adapts to dark mode
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal)
             }
-            .padding(.top, 16)
-
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Close")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color(.systemGray)) // Adapts to dark mode
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-            .padding(.top, 8)
+            .padding(.horizontal, 20)
         }
-        .padding(30)
-        .background(Color(.systemBackground)) // Adapts to dark mode
-        .cornerRadius(12)
-        .shadow(radius: 10)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Ensures the entire sheet background adapts to dark mode
     }
 
     private func deleteTransaction() {
