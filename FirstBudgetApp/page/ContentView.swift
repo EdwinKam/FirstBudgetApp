@@ -131,29 +131,71 @@ struct ContentView: View {
                 }
 
                 VStack {
-                    // The circular button
-                    Button(action: {
-                        withAnimation {
-                            showOptions.toggle()
+                    HStack {
+                        // The circular button
+                        Button(action: {
+                            withAnimation {
+                                showOptions.toggle()
+                            }
+                        }) {
+                            Image(systemName: "plus")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding()
+                                .background(Color(.systemGreen).opacity(0.2))
+                                .clipShape(Circle())
                         }
-                    }) {
-                        Image(systemName: "plus")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding()
-                            .background(Color(.systemGreen).opacity(0.2))
-                            .clipShape(Circle())
+
+                        Spacer()
+
+                        // Sign out button
+                        Button(action: {
+                            do {
+                                try authState.signOut()
+                                CoreDataManager.shared.deleteAllPersistentStores()
+                                // Set showSignInView to true when signed out
+                                showSignInView = true
+                            } catch {
+                                // Handle error appropriately, e.g., show an alert
+                                print("Error signing out: \(error.localizedDescription)")
+                            }
+                        }) {
+                            Image(systemName: "power")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding()
+                                .background(Color.red.opacity(0.2))
+                                .clipShape(Circle())
+                        }
                     }
+                    .padding()
                     
-                    // The pop-up options
-                    if showOptions {
-                        VStack(alignment: .leading, spacing: 10) {
+                    Spacer()
+                }
+
+                // The pop-up options
+                if showOptions {
+                    VStack(alignment: .leading, spacing: 10) {
+                        NavigationLink(
+                            destination: NewTransaction().onDisappear {
+                                showOptions = false
+                            },
+                            label: {
+                                Text("Add New Transaction")
+                                    .padding()
+                                    .frame(minWidth: 150)
+                                    .background(Color.gray)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                        )
+                        ForEach(top2Categories, id: \.self) { category in
                             NavigationLink(
-                                destination: NewTransaction().onDisappear {
+                                destination: NewTransaction(selectedCategory: category).onDisappear {
                                     showOptions = false
                                 },
                                 label: {
-                                    Text("Add New Transaction")
+                                    Text(category.name)
                                         .padding()
                                         .frame(minWidth: 150)
                                         .background(Color.gray)
@@ -161,43 +203,11 @@ struct ContentView: View {
                                         .cornerRadius(10)
                                 }
                             )
-                            ForEach(top2Categories, id: \.self) { category in
-                                NavigationLink(
-                                    destination: NewTransaction(selectedCategory: category).onDisappear {
-                                        showOptions = false
-                                    },
-                                    label: {
-                                        Text(category.name)
-                                            .padding()
-                                            .frame(minWidth: 150)
-                                            .background(Color.gray)
-                                            .foregroundColor(.white)
-                                            .cornerRadius(10)
-                                    }
-                                )
-                            }
                         }
-                        .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
                     }
+                    .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
                 }
-                .padding()
             }
-            .navigationBarItems(trailing: Button(action: {
-                do {
-                    try authState.signOut()
-                    CoreDataManager.shared.deleteAllPersistentStores()
-                    // Set showSignInView to true when signed out
-                    showSignInView = true
-                } catch {
-                    // Handle error appropriately, e.g., show an alert
-                    print("Error signing out: \(error.localizedDescription)")
-                }
-            }) {
-                Image(systemName: "power")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(.red)
-            })
         }
         .task {
             TransactionManager.shared.transactionState = transactionState
