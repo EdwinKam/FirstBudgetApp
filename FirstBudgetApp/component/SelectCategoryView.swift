@@ -11,6 +11,7 @@ struct SelectCategoryView: View {
     // State variables for categories and transactions
     @State private var categories: [TransactionCategory] = []
     @State private var transactions: [TransactionItem] = []
+    @EnvironmentObject var authState: AuthState
 
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
@@ -71,9 +72,9 @@ struct SelectCategoryView: View {
     private func fetchCategoriesAndTransactions() {
         Task {
             do {
-                categories = try await CategoryManager.shared.fetchCategories()
+                categories = try await CategoryManager.shared.fetchCategories(authState: authState)
                 print("done fetching all catgory in select category view")
-                transactions = try await TransactionManager.shared.fetchTransactions()
+                transactions = try await TransactionManager.shared.fetchTransactions(authState: authState)
             } catch {
                 print("Failed to fetch data: \(error.localizedDescription)")
             }

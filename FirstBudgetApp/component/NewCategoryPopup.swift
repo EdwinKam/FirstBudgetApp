@@ -7,6 +7,7 @@ struct NewCategoryPopup: View {
     @Binding var newCategory: TransactionCategory?
     @State private var newCategoryName: String = ""
     @Binding var editFromCategory: TransactionCategory?
+    @EnvironmentObject var authState: AuthState
 
     var body: some View {
         VStack {
@@ -19,7 +20,7 @@ struct NewCategoryPopup: View {
                 .padding()
                 .onAppear {
                     if let category = editFromCategory {
-                        newCategoryName = category.name ?? ""
+                        newCategoryName = category.name
                     }
                 }
 
@@ -69,16 +70,16 @@ struct NewCategoryPopup: View {
     }
 
     private func addCategory(name: String) {
-        newCategory = CategoryManager.shared.addCatgory(name: name)
+        newCategory = CategoryManager.shared.addCatgory(name: name, authState: authState)
     }
 
     private func updateCategory(category: TransactionCategory, name: String) {
-        newCategory = CategoryManager.shared.updateCategory(category: category, name: name)
+        newCategory = CategoryManager.shared.updateCategory(category: category, name: name, authState: authState)
     }
 
     private func deleteCategory(category: TransactionCategory) {
         do {
-            try CategoryManager.shared.deleteCategory(category: category)
+            try CategoryManager.shared.deleteCategory(category: category, authState: authState)
         } catch {
             print("Failed to delete category: \(error.localizedDescription)")
         }
