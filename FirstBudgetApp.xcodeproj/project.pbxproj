@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		430C4F992C0EC87A00003A18 /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F982C0EC87A00003A18 /* CategoryManager.swift */; };
 		430C4F9B2C0ECCBF00003A18 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9A2C0ECCBF00003A18 /* CoreDataManager.swift */; };
+		430C4F9E2C141F8300003A18 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9D2C141F8300003A18 /* AuthState.swift */; };
+		430C4FA02C14249E00003A18 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9F2C14249E00003A18 /* ProfileManager.swift */; };
 		431FAFC02C0D460D00B12086 /* TimePeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFBF2C0D460D00B12086 /* TimePeriod.swift */; };
 		431FAFC22C0D4B7300B12086 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 431FAFC12C0D4B7300B12086 /* Launch Screen.storyboard */; };
 		431FAFC72C0D8A0700B12086 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 431FAFC62C0D8A0700B12086 /* FirebaseAnalytics */; };
@@ -66,6 +68,8 @@
 /* Begin PBXFileReference section */
 		430C4F982C0EC87A00003A18 /* CategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManager.swift; sourceTree = "<group>"; };
 		430C4F9A2C0ECCBF00003A18 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		430C4F9D2C141F8300003A18 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
+		430C4F9F2C14249E00003A18 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		431FAFBF2C0D460D00B12086 /* TimePeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePeriod.swift; sourceTree = "<group>"; };
 		431FAFC12C0D4B7300B12086 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		431FAFCC2C0D8D6D00B12086 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -132,6 +136,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		430C4F9C2C141F6F00003A18 /* globalState */ = {
+			isa = PBXGroup;
+			children = (
+				430C4F9D2C141F8300003A18 /* AuthState.swift */,
+			);
+			path = globalState;
+			sourceTree = "<group>";
+		};
 		431FAFBE2C0D45FE00B12086 /* model */ = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +167,7 @@
 				431FAFDA2C0D950C00B12086 /* AuthManager.swift */,
 				431FAFE52C0EBF8300B12086 /* TransactionManager.swift */,
 				430C4F982C0EC87A00003A18 /* CategoryManager.swift */,
+				430C4F9F2C14249E00003A18 /* ProfileManager.swift */,
 			);
 			path = firebase;
 			sourceTree = "<group>";
@@ -206,6 +219,7 @@
 		43BC388F2C031738009CF151 /* FirstBudgetApp */ = {
 			isa = PBXGroup;
 			children = (
+				430C4F9C2C141F6F00003A18 /* globalState */,
 				431FAFD92C0D94DE00B12086 /* firebase */,
 				431FAFD62C0D91A800B12086 /* Utilities */,
 				431FAFD32C0D8E6700B12086 /* Info.plist */,
@@ -406,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43BC389A2C031738009CF151 /* Persistence.swift in Sources */,
+				430C4FA02C14249E00003A18 /* ProfileManager.swift in Sources */,
 				431FAFE42C0EBAD500B12086 /* SettingView.swift in Sources */,
 				431FAFDB2C0D950C00B12086 /* AuthManager.swift in Sources */,
 				43BC38932C031738009CF151 /* ContentView.swift in Sources */,
@@ -418,6 +433,7 @@
 				431FAFD52C0D8ED000B12086 /* AuthSignIn.swift in Sources */,
 				431FAFE62C0EBF8300B12086 /* TransactionManager.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
+				430C4F9E2C141F8300003A18 /* AuthState.swift in Sources */,
 				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,
 				432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,

@@ -12,7 +12,7 @@ import GoogleSignInSwift
 @MainActor
 final class AuthViewModel: ObservableObject {
     
-    func signInGoogle() async throws {
+    func signInGoogle(authState: AuthState) async throws {
         guard let topVC = Utilities.shared.topViewController() else {
             throw URLError(.cannotFindHost)
         }
@@ -27,11 +27,15 @@ final class AuthViewModel: ObservableObject {
 
         let tokens = GoogleSignInResultModel(idToken: idToken, accessToken: accessToken)
         try await AuthManager.shared.signInWithGoogle(tokens: tokens)
+
+        // Load authenticated user into the authState
+        await authState.loadAuthenticatedUser()
     }
 }
 
 struct AuthSignIn: View {
     @StateObject private var viewModel = AuthViewModel()
+    @EnvironmentObject var authState: AuthState
     @Binding var showSignInView: Bool
 
     var body: some View {
@@ -53,7 +57,7 @@ struct AuthSignIn: View {
             Button(action: {
                 Task {
                     do {
-                        try await viewModel.signInGoogle()
+                        try await viewModel.signInGoogle(authState: authState)
                         // Set showSignInView to false when sign-in is successful
                         showSignInView = false
                     } catch {

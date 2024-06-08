@@ -3,6 +3,7 @@ import SwiftUI
 struct EditTransactionPopup: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var authState: AuthState
     var transaction: TransactionItem
 
     var body: some View {
@@ -54,7 +55,7 @@ struct EditTransactionPopup: View {
     private func deleteTransaction() {
         withAnimation {
             do {
-                try TransactionManager.shared.deleteTransaction(transaction: transaction)
+                try TransactionManager.shared.deleteTransaction(transaction: transaction, authState: authState)
                 presentationMode.wrappedValue.dismiss()
             } catch {
                 let nsError = error as NSError

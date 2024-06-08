@@ -35,7 +35,7 @@ struct PieChartView: View {
     var body: some View {
         ZStack {
             Chart {
-                ForEach(categoryTotals.sorted(by: { $0.value.0.name ?? "" < $1.value.0.name ?? "" }), id: \.key) { _, value in
+                ForEach(categoryTotals.sorted(by: { $0.value.0.name < $1.value.0.name }), id: \.key) { _, value in
                     let category = value.0
                     let total = value.1
                     let isSelected = selectedCategory?.id == category.id
@@ -48,10 +48,10 @@ struct PieChartView: View {
                         outerRadius: MarkDimension(integerLiteral: outerRadius),
                         angularInset: 2
                     )
-                    .foregroundStyle(by: .value("Category", category.name ?? "Unknown"))
+                    .foregroundStyle(by: .value("Category", category.name))
                     .cornerRadius(3)
                     .annotation(position: .overlay, alignment: .center) {
-                        Text(category.name ?? "Unknown")
+                        Text(category.name)
                             .font(.caption)
                             .foregroundColor(.white)
                             .rotationEffect(.degrees(0)) // Rotate to align with the sector

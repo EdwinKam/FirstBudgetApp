@@ -1,10 +1,3 @@
-//
-//  UserManager.swift
-//  FirstBudgetApp
-//
-//  Created by Edwin Kam on 6/3/24.
-//
-
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -28,9 +21,9 @@ class TransactionManager {
     // Dependency injection of TransactionState
     var transactionState: TransactionState?
     
-    func fetchTransactions() async throws -> [TransactionItem] {
+    func fetchTransactions(authState: AuthState) async throws -> [TransactionItem] {
         print("called fetchTransactions")
-        let transactions = try await fetchTransactionsFromFirebase()
+        let transactions = try await fetchTransactionsFromFirebase(authState: authState)
         // Update the global state
         DispatchQueue.main.async {
             self.transactionState?.transactionItems = transactions
@@ -38,7 +31,7 @@ class TransactionManager {
         return transactions
     }
     
-    func saveTransaction(description: String, amount: Double, category: TransactionCategory) throws {
+    func saveTransaction(description: String, amount: Double, category: TransactionCategory, authState: AuthState) throws {
         print("trying to save to coredata")
         let transaction = try saveToCoreData(description: description, amount: amount, category: category)
         print("added to coredata")
@@ -48,7 +41,7 @@ class TransactionManager {
         }
         Task {
             do {
-                try await self.createNewTransactionToFirebase(transaction: transaction)
+                try await self.createNewTransactionToFirebase(transaction: transaction, authState: authState)
             } catch {
                 let nsError = error as NSError
                 print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
@@ -56,10 +49,10 @@ class TransactionManager {
         }
     }
     
-    func deleteTransaction(transaction: TransactionItem) throws {
+    func deleteTransaction(transaction: TransactionItem, authState: AuthState) throws {
         Task {
             do {
-                try await self.deleteTransactionFromFirebase(transactionId: transaction.id)
+                try await self.deleteTransactionFromFirebase(transactionId: transaction.id, authState: authState)
                 // Update the global state
                 DispatchQueue.main.async {
                     self.transactionState?.transactionItems.removeAll { $0.id == transaction.id }
@@ -70,13 +63,15 @@ class TransactionManager {
             }
         }
         // Optionally delete from Core Data if needed
-//        try deleteFromCoreData(transaction: transaction)
+        // try deleteFromCoreData(transaction: transaction)
     }
 
     // MARK: - Firestore Transaction Management
     
-    func createNewTransactionToFirebase(transaction: TransactionItem) async throws {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    func createNewTransactionToFirebase(transaction: TransactionItem, authState: AuthState) async throws {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
         let db = Firestore.firestore()
 
         // Prepare the data to be saved
@@ -97,8 +92,10 @@ class TransactionManager {
         print("Transaction added successfully to Firebase")
     }
     
-    private func fetchTransactionsFromFirebase() async throws -> [TransactionItem] {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    private func fetchTransactionsFromFirebase(authState: AuthState) async throws -> [TransactionItem] {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
         let db = Firestore.firestore()
 
         // Fetch all documents from the user's transactions collection
@@ -121,7 +118,7 @@ class TransactionManager {
             // Fetch the category asynchronously
             let category: TransactionCategory?
             do {
-                category = try await CategoryManager.shared.fetchCategoryById(categoryId: categoryId)
+                category = try await CategoryManager.shared.fetchCategoryById(categoryId: categoryId, authState: authState)
             } catch {
                 print("Failed to fetch category: \(categoryId), \(error.localizedDescription)")
                 category = nil
@@ -139,8 +136,10 @@ class TransactionManager {
         return transactions
     }
     
-    func deleteTransactionFromFirebase(transactionId: UUID) async throws {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    func deleteTransactionFromFirebase(transactionId: UUID, authState: AuthState) async throws {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
         let db = Firestore.firestore()
 
         // Reference to the user's transactions collection

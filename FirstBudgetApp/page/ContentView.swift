@@ -9,6 +9,7 @@ struct ContentView: View {
 
     // State variable to hold fetched transaction items
     @StateObject private var transactionState = TransactionState()
+    @EnvironmentObject var authState: AuthState
 
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
@@ -166,7 +167,7 @@ struct ContentView: View {
                                         showOptions = false
                                     },
                                     label: {
-                                        Text(category.name ?? "Unknown")
+                                        Text(category.name)
                                             .padding()
                                             .frame(minWidth: 150)
                                             .background(Color.gray)
@@ -183,7 +184,7 @@ struct ContentView: View {
             }
             .navigationBarItems(trailing: Button(action: {
                 do {
-                    try AuthManager.shared.signOut()
+                    try authState.signOut()
                     CoreDataManager.shared.deleteAllPersistentStores()
                     // Set showSignInView to true when signed out
                     showSignInView = true
@@ -206,7 +207,7 @@ struct ContentView: View {
 
     private func fetchFirebaseTransactions() async {
         do {
-            try await TransactionManager.shared.fetchTransactions()
+            let _ = try await TransactionManager.shared.fetchTransactions(authState: authState)
         } catch {
             print("Failed to fetch transactions from Firebase: \(error.localizedDescription)")
         }

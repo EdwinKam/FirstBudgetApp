@@ -1,15 +1,9 @@
-//
-//  RootView.swift
-//  FirstBudgetApp
-//
-//  Created by Edwin Kam on 6/2/24.
-//
-
 import SwiftUI
 
 struct RootView: View {
     
-    @State var showSignInView: Bool = false
+    @StateObject private var authState = AuthState()
+    @State private var showSignInView: Bool = false
     
     var body: some View {
         ZStack {
@@ -18,8 +12,9 @@ struct RootView: View {
                     .onAppear() {
                         Task {
                             do {
-                                try await CategoryManager.shared.downloadCategories()
-                                print("downloaded from firebase")
+                                try await CategoryManager.shared.downloadCategories(authState: authState)
+                                try await ProfileManager.shared.createProfileIfNotExist(authState: authState)
+                                print("Downloaded categories from Firebase")
                             } catch {
                                 print("Failed to download categories: \(error.localizedDescription)")
                             }
@@ -28,14 +23,22 @@ struct RootView: View {
             }
         }
         .onAppear {
-            let authUser = try? AuthManager.shared.getAuthenticatedUser()
-            self.showSignInView = authUser == nil
+            Task {
+                await authState.loadAuthenticatedUser()
+                showSignInView = authState.authUser == nil
+            }
         }
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthSignIn(showSignInView: $showSignInView)
+                    .onDisappear {
+                        Task {
+                            await authState.loadAuthenticatedUser()
+                        }
+                    }
             }
         }
+        .environmentObject(authState) // Inject the AuthState into the environment
     }
 }
 

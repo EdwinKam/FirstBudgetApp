@@ -1,5 +1,6 @@
 import Foundation
 import FirebaseAuth
+import Firebase
 
 struct AuthDataResultModel {
     let uid: String
@@ -18,8 +19,6 @@ struct AuthDataResultModel {
 struct GoogleSignInResultModel {
     let idToken: String
     let accessToken: String
-//    let name: String?
-//    let email: String?
 }
 
 enum AuthProviderOption: String {
@@ -34,13 +33,14 @@ final class AuthManager {
     private init() { }
     
     func getAuthenticatedUser() throws -> AuthDataResultModel {
+        
         guard let user = Auth.auth().currentUser else {
             throw URLError(.badServerResponse)
         }
         
         return AuthDataResultModel(user: user)
     }
-        
+    
     func getProviders() throws -> [AuthProviderOption] {
         guard let providerData = Auth.auth().currentUser?.providerData else {
             throw URLError(.badServerResponse)
@@ -57,7 +57,7 @@ final class AuthManager {
         print(providers)
         return providers
     }
-        
+    
     func signOut() throws {
         try Auth.auth().signOut()
     }

@@ -5,6 +5,7 @@ struct NewTransaction: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) private var presentationMode
 
+    @EnvironmentObject var authState: AuthState
     @State private var transactionDescription: String = ""
     @State private var amount: String = ""
     @State var selectedCategory: TransactionCategory?
@@ -132,7 +133,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, authState: authState)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil

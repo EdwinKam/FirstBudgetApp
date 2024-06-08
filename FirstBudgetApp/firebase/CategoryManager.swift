@@ -1,10 +1,3 @@
-//
-//  CategoryManager.swift
-//  FirstBudgetApp
-//
-//  Created by Edwin Kam on 6/3/24.
-//
-
 import Foundation
 import FirebaseFirestore
 import CoreData
@@ -26,12 +19,13 @@ class CategoryManager {
     private init() {}
     
     // MARK: - public function
-    func addCatgory(name: String) -> TransactionCategory{
+    func addCatgory(name: String, authState: AuthState) -> TransactionCategory {
         let newCategory = addCategoryToCoreData(name: name)
+        print("adding category \(name)")
         // async task to add to firebase
         Task {
             do {
-                try await self.addNewCategoryToFirebase(category: newCategory)
+                try await self.addNewCategoryToFirebase(category: newCategory, authState: authState)
             } catch {
                 let nsError = error as NSError
                 print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
@@ -40,19 +34,27 @@ class CategoryManager {
         return newCategory
     }
     
-    func fetchCategories() async throws -> [TransactionCategory] {
-        return try await fetchCategoriesFromFirebase()
+    func addCatgoryAsync(name: String, authState: AuthState) async throws -> TransactionCategory {
+        let newCategory = addCategoryToCoreData(name: name)
+        print("adding category async \(name)")
+        // async task to add to firebase
+        try await self.addNewCategoryToFirebase(category: newCategory, authState: authState)
+        return newCategory
     }
     
-    func fetchCategoryById(categoryId: String) async throws -> TransactionCategory? {
-        return try await fetchCategoryByIdFromFirebase(categoryId: categoryId)
+    func fetchCategories(authState: AuthState) async throws -> [TransactionCategory] {
+        return try await fetchCategoriesFromFirebase(authState: authState)
     }
     
-    func updateCategory(category: TransactionCategory, name: String) -> TransactionCategory{
+    func fetchCategoryById(categoryId: String, authState: AuthState) async throws -> TransactionCategory? {
+        return try await fetchCategoryByIdFromFirebase(categoryId: categoryId, authState: authState)
+    }
+    
+    func updateCategory(category: TransactionCategory, name: String, authState: AuthState) -> TransactionCategory {
         let newCategory = updateCategoryFromCoreData(category: category, name: name)
         Task {
             do {
-                try await self.addNewCategoryToFirebase(category: newCategory)
+                try await self.addNewCategoryToFirebase(category: newCategory, authState: authState)
             } catch {
                 let nsError = error as NSError
                 print("Error adding category to Firebase: \(nsError), \(nsError.userInfo)")
@@ -61,12 +63,12 @@ class CategoryManager {
         return newCategory
     }
     
-    func deleteCategory(category: TransactionCategory) {
+    func deleteCategory(category: TransactionCategory, authState: AuthState) {
         do {
             // Call the async function without waiting for it
             Task {
                 do {
-                    try await self.deleteCategoryFromFirebase(category: category)
+                    try await self.deleteCategoryFromFirebase(category: category, authState: authState)
                     print("successfully delete from firebase")
                 } catch {
                     let nsError = error as NSError
@@ -82,45 +84,17 @@ class CategoryManager {
     }
     
     // this func gets call when the app is boot, code in FirstBudgetApp.swift
-    func downloadCategories() async throws {
-//        print("syncing data from firebase")
-//        
-//        // Extract categories from Firestore
-//        let firestoreCategories: [TransactionCategory] = try await fetchCategoriesFromFirebase()
-//        
-//        // Replace everything in Core Data
-//        let viewContext = coreDataManager.viewContext
-//        let coreDataCategories = try fetchFromCoreData()
-//        
-//        // Delete existing categories
-//        print("deleting")
-//        CoreDataManager.shared.deleteAllPersistentStores()
-////        print(coreDataCategories.map { $0.name })
-////        for category in coreDataCategories {
-////            viewContext.delete(category)
-////        }
-//        
-//        // Add new categories from Firestore
-//        print("inserting")
-//        print(firestoreCategories.map { $0.name })
-//        for category in firestoreCategories {
-//            viewContext.insert(category)
-//        }
-//        
-//        // Save context
-////        do {
-//                    try viewContext.save()
-////                } catch {
-////                    let nsError = error as NSError
-////                    print("An error occurred while saving: \(nsError), \(nsError.userInfo)")
-////                    throw error
-////                }
+    func downloadCategories(authState: AuthState) async throws {
+        // Your existing downloadCategories implementation
     }
     
     // MARK: - Category Management
     
-    private func addNewCategoryToFirebase(category: TransactionCategory) async throws {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    func addNewCategoryToFirebase(category: TransactionCategory, authState: AuthState) async throws {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
+        
         let categoryData: [String: Any] = [
             "id": category.id.uuidString,
             "name": category.name
@@ -133,8 +107,11 @@ class CategoryManager {
         try await userCategoriesRef.document(category.id.uuidString).setData(categoryData)
     }
 
-    private func fetchCategoryByIdFromFirebase(categoryId: String) async throws -> TransactionCategory? {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    private func fetchCategoryByIdFromFirebase(categoryId: String, authState: AuthState) async throws -> TransactionCategory? {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
+
         let db = Firestore.firestore()
 
         // Fetch the category document from Firestore
@@ -160,8 +137,11 @@ class CategoryManager {
         return category
     }
     
-    private func fetchCategoriesFromFirebase() async throws -> [TransactionCategory] {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    private func fetchCategoriesFromFirebase(authState: AuthState) async throws -> [TransactionCategory] {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
+
         // Fetch from Firestore
         let snapshot = try await db.collection("users").document(auth.uid).collection("categories").getDocuments()
         
@@ -184,8 +164,10 @@ class CategoryManager {
         return firestoreCategories
     }
     
-    private func deleteCategoryFromFirebase(category: TransactionCategory) async throws {
-        let auth = try AuthManager.shared.getAuthenticatedUser()
+    private func deleteCategoryFromFirebase(category: TransactionCategory, authState: AuthState) async throws {
+        guard let auth = authState.authUser else {
+            throw URLError(.badServerResponse)
+        }
         
         // Reference to the user's categories collection
         let userCategoriesRef = db.collection("users").document(auth.uid).collection("categories")
