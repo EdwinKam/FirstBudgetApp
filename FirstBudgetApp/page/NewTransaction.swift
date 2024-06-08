@@ -40,6 +40,9 @@ struct NewTransaction: View {
                                         withAnimation(.easeInOut) {
                                             showDetails = true
                                         }
+                                        // Dismiss the keyboard
+                                        self.isDescriptionFieldFocused = false
+                                        self.isAmountFieldFocused = false
                                     }
                                 }) {
                                     Image(systemName: "arrow.right.circle.fill")
@@ -53,7 +56,6 @@ struct NewTransaction: View {
                         }
                         .padding(.horizontal)
                         .transition(.move(edge: .leading))
-                        .navigationTitle("New Transaction")
                     } else {
                         VStack(alignment: .leading) {
                             Text("What category is it?")
@@ -87,6 +89,9 @@ struct NewTransaction: View {
                                     withAnimation(.easeInOut) {
                                         showDetails = false
                                     }
+                                    // Dismiss the keyboard
+                                    self.isDescriptionFieldFocused = false
+                                    self.isAmountFieldFocused = false
                                 }) {
                                     Image(systemName: "arrow.left.circle.fill")
                                         .resizable()
@@ -124,6 +129,15 @@ struct NewTransaction: View {
                     self.isAmountFieldFocused = false
                 }
             }
+            .navigationBarBackButtonHidden(true) // Hide the default back button
+            .navigationBarItems(leading: Button(action: {
+                presentationMode.wrappedValue.dismiss() // Custom back button action
+            }) {
+                Image(systemName: "xmark.circle.fill") // Custom back button image
+                    .resizable()
+                    .frame(width: 50, height: 50) // Match the size of the right arrow
+                    .foregroundColor(.red) // Red color for cancel button
+            })
         }
     }
 
