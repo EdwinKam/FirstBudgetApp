@@ -125,8 +125,19 @@ struct NewTransaction: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .contentShape(Rectangle()) // Make the entire area tappable
                 .onTapGesture {
-                    self.isDescriptionFieldFocused = false
-                    self.isAmountFieldFocused = false
+                    if showDetails {
+                        if isAmountFieldFocused {
+                            self.isAmountFieldFocused = false
+                        } else {
+                            self.isAmountFieldFocused = true
+                        }
+                    } else {
+                        if isDescriptionFieldFocused {
+                            self.isDescriptionFieldFocused = false
+                        } else {
+                            self.isDescriptionFieldFocused = true
+                        }
+                    }
                 }
             }
             .navigationBarBackButtonHidden(true) // Hide the default back button
