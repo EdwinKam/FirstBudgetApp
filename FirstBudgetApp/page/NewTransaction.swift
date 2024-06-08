@@ -140,15 +140,6 @@ struct NewTransaction: View {
                     }
                 }
             }
-            .navigationBarBackButtonHidden(true) // Hide the default back button
-            .navigationBarItems(leading: Button(action: {
-                presentationMode.wrappedValue.dismiss() // Custom back button action
-            }) {
-                Image(systemName: "xmark.circle.fill") // Custom back button image
-                    .resizable()
-                    .frame(width: 50, height: 50) // Match the size of the right arrow
-                    .foregroundColor(.red) // Red color for cancel button
-            })
         }
     }
 
