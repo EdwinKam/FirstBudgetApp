@@ -161,6 +161,7 @@ class TransactionManager {
         do {
             return try viewContext.fetch(fetchRequest)
         } catch {
+            print("fetch transaction from core data error")
             throw error
         }
     }
@@ -174,14 +175,24 @@ class TransactionManager {
         newItem.createdAt = Date()
         newItem.id = UUID()
         
-        try context.save()
-        return newItem
+        do {
+            try context.save()
+            return newItem
+        } catch {
+            print("saveToCoreData error")
+            throw error
+        }
+        
     }
     
     func deleteFromCoreData(transaction: TransactionItem) throws {
         let context = coreDataManager.viewContext
         context.delete(transaction)
         
-        try context.save()
+        do {
+            try context.save()
+        } catch {
+            print("deleteFromCoreData error")
+        }
     }
 }
