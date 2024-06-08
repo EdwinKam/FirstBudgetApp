@@ -40,6 +40,9 @@ struct NewTransaction: View {
                                         withAnimation(.easeInOut) {
                                             showDetails = true
                                         }
+                                        // Dismiss the keyboard
+                                        self.isDescriptionFieldFocused = false
+                                        self.isAmountFieldFocused = false
                                     }
                                 }) {
                                     Image(systemName: "arrow.right.circle.fill")
@@ -53,9 +56,20 @@ struct NewTransaction: View {
                         }
                         .padding(.horizontal)
                         .transition(.move(edge: .leading))
-                        .navigationTitle("New Transaction")
                     } else {
                         VStack(alignment: .leading) {
+                            Text("What category is it?")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+
+                            SelectCategoryView(
+                                selectedCategory: $selectedCategory,
+                                isPresentingCategoryPopup: $isPresentingCategoryPopup
+                            )
+                            .padding(.bottom, 20)
+
                             Text("How much was it?")
                                 .font(.largeTitle)
                                 .bold()
@@ -68,24 +82,16 @@ struct NewTransaction: View {
                                 .padding(.bottom, 20)
                                 .padding(.leading, 20)
                                 .padding(.trailing, 20)
-
-                            Text("What category is it?")
-                                .font(.largeTitle)
-                                .bold()
-                                .padding(.bottom, 20)
-                                .padding(.leading, 20)
-                            
-                            SelectCategoryView(
-                                selectedCategory: $selectedCategory,
-                                isPresentingCategoryPopup: $isPresentingCategoryPopup
-                            )
-                            .padding(.bottom, 20)
+                                .focused($isAmountFieldFocused)
 
                             HStack {
                                 Button(action: {
                                     withAnimation(.easeInOut) {
                                         showDetails = false
                                     }
+                                    // Dismiss the keyboard
+                                    self.isDescriptionFieldFocused = false
+                                    self.isAmountFieldFocused = false
                                 }) {
                                     Image(systemName: "arrow.left.circle.fill")
                                         .resizable()
@@ -117,15 +123,27 @@ struct NewTransaction: View {
                     }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                .contentShape(Rectangle()) // Make the entire area tappable
                 .onTapGesture {
-                    self.hideKeyboard()
+                    if showDetails {
+                        if isAmountFieldFocused {
+                            self.isAmountFieldFocused = false
+                        } else {
+                            self.isAmountFieldFocused = true
+                        }
+                    } else {
+                        if isDescriptionFieldFocused {
+                            self.isDescriptionFieldFocused = false
+                        } else {
+                            self.isDescriptionFieldFocused = true
+                        }
+                    }
                 }
             }
         }
     }
 
-    private func addItem() { // this function cant be async somehow
-        // it will say something trying to update the UI from non main thread
+    private func addItem() {
         print("trying to add transaction in NewTransaction")
         guard let amountValue = Double(amount),
               !transactionDescription.isEmpty,
@@ -144,10 +162,6 @@ struct NewTransaction: View {
             print("Unresolved error \(nsError), \(nsError.userInfo)")
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
-    }
-
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

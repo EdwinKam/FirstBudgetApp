@@ -13,45 +13,33 @@ struct SelectCategoryView: View {
     @State private var transactions: [TransactionItem] = []
     @EnvironmentObject var authState: AuthState
 
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
     var body: some View {
         let sortedCategories = sortCategoriesByPopularity(categories: categories, transactions: transactions)
         VStack(alignment: .leading, spacing: 16) {
-            ForEach(Array(sortedCategories.chunked(into: 4)), id: \.self) { rowCategories in
-                HStack {
-                    ForEach(rowCategories, id: \.self) { category in
-                        CategoryCircleView(category: category, isSelected: category.id == selectedCategory?.id)
-                            .onTapGesture {
-                                selectedCategory = category
-                            }
-                            .onLongPressGesture {
-                                categoryToEdit = category // Set category to edit
-                                isPresentingCategoryPopup = true
-                            }
-                    }
-                    if rowCategories.count < 4 {
-                        PlusCircleView(isSelected: false)
-                            .onTapGesture {
-                                print("press")
-                                selectedCategory = nil // Clear selected category for new addition
-                                categoryToEdit = nil
-                                isPresentingCategoryPopup = true
-                            }
-                        ForEach(0..<(3 - rowCategories.count), id: \.self) { _ in
-                            Spacer()
-                        }
-                    }
-                }
-            }
-            if sortedCategories.count % 4 == 0 {
-                HStack {
-                    PlusCircleView(isSelected: false)
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(sortedCategories) { category in
+                    CategoryCircleView(category: category, isSelected: category.id == selectedCategory?.id)
                         .onTapGesture {
-                            selectedCategory = nil // Clear selected category for new addition
-                            categoryToEdit = nil
+                            selectedCategory = category
+                        }
+                        .onLongPressGesture {
+                            categoryToEdit = category // Set category to edit
                             isPresentingCategoryPopup = true
                         }
-                    Spacer()
                 }
+                PlusCircleView(isSelected: false)
+                    .onTapGesture {
+                        selectedCategory = nil // Clear selected category for new addition
+                        categoryToEdit = nil
+                        isPresentingCategoryPopup = true
+                    }
             }
         }
         .padding(20)
@@ -125,6 +113,9 @@ struct CategoryCircleView: View {
             Text(category.name)
                 .font(.caption)
                 .foregroundColor(.primary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 8)
     }
@@ -148,6 +139,9 @@ struct PlusCircleView: View {
             Text("Add")
                 .font(.caption)
                 .foregroundColor(.primary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 8)
     }
