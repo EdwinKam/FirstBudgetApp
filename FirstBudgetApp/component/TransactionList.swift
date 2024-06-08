@@ -65,10 +65,16 @@ struct TransactionList: View {
     }
 
     private var filteredItems: [TransactionItem] {
+        let filtered: [TransactionItem]
         if let category = filteredByCategory {
-            return items.filter { $0.category?.id == category.id }
+            filtered = items.filter { $0.category?.id == category.id }
         } else {
-            return Array(items)
+            filtered = Array(items)
+        }
+        return filtered.sorted {
+            let date1 = $0.createdAt ?? Date()
+            let date2 = $1.createdAt ?? Date()
+            return date1 > date2
         }
     }
 }
