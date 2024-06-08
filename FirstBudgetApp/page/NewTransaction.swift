@@ -68,13 +68,14 @@ struct NewTransaction: View {
                                 .padding(.bottom, 20)
                                 .padding(.leading, 20)
                                 .padding(.trailing, 20)
+                                .focused($isAmountFieldFocused)
 
                             Text("What category is it?")
                                 .font(.largeTitle)
                                 .bold()
                                 .padding(.bottom, 20)
                                 .padding(.leading, 20)
-                            
+
                             SelectCategoryView(
                                 selectedCategory: $selectedCategory,
                                 isPresentingCategoryPopup: $isPresentingCategoryPopup
@@ -117,15 +118,19 @@ struct NewTransaction: View {
                     }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                .contentShape(Rectangle()) // Make the entire area tappable
                 .onTapGesture {
-                    self.hideKeyboard()
+                    if !showDetails {
+                        self.isDescriptionFieldFocused = true
+                    } else {
+                        self.isAmountFieldFocused = true
+                    }
                 }
             }
         }
     }
 
-    private func addItem() { // this function cant be async somehow
-        // it will say something trying to update the UI from non main thread
+    private func addItem() {
         print("trying to add transaction in NewTransaction")
         guard let amountValue = Double(amount),
               !transactionDescription.isEmpty,
@@ -144,10 +149,6 @@ struct NewTransaction: View {
             print("Unresolved error \(nsError), \(nsError.userInfo)")
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
-    }
-
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
