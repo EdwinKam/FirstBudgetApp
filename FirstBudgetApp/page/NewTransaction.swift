@@ -56,6 +56,18 @@ struct NewTransaction: View {
                         .navigationTitle("New Transaction")
                     } else {
                         VStack(alignment: .leading) {
+                            Text("What category is it?")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+
+                            SelectCategoryView(
+                                selectedCategory: $selectedCategory,
+                                isPresentingCategoryPopup: $isPresentingCategoryPopup
+                            )
+                            .padding(.bottom, 20)
+
                             Text("How much was it?")
                                 .font(.largeTitle)
                                 .bold()
@@ -69,18 +81,6 @@ struct NewTransaction: View {
                                 .padding(.leading, 20)
                                 .padding(.trailing, 20)
                                 .focused($isAmountFieldFocused)
-
-                            Text("What category is it?")
-                                .font(.largeTitle)
-                                .bold()
-                                .padding(.bottom, 20)
-                                .padding(.leading, 20)
-
-                            SelectCategoryView(
-                                selectedCategory: $selectedCategory,
-                                isPresentingCategoryPopup: $isPresentingCategoryPopup
-                            )
-                            .padding(.bottom, 20)
 
                             HStack {
                                 Button(action: {
@@ -120,11 +120,8 @@ struct NewTransaction: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .contentShape(Rectangle()) // Make the entire area tappable
                 .onTapGesture {
-                    if !showDetails {
-                        self.isDescriptionFieldFocused = true
-                    } else {
-                        self.isAmountFieldFocused = true
-                    }
+                    self.isDescriptionFieldFocused = false
+                    self.isAmountFieldFocused = false
                 }
             }
         }
