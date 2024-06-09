@@ -76,6 +76,7 @@ struct ContentView: View {
                         PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                             .frame(height: 300)
                             .padding()
+                        BarChartView(transactionItems: filteredItems, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                     } else {
                         Text("No data to display")
                             .frame(height: 300)
