@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var selectedItem: TransactionItem?
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
+    @State private var showMenuOptions = false // State to toggle the menu options
     @State private var selectedTimePeriod: TimePeriod = .week // State for selected time period
     @State private var currentDate = Date() // State for current date for time period navigation
 
@@ -69,7 +70,7 @@ struct ContentView: View {
                                startPoint: .top,
                                endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
-                
+
                 VStack {
                     if !filteredItems.isEmpty {
                         PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
@@ -80,7 +81,7 @@ struct ContentView: View {
                             .frame(height: 300)
                             .padding()
                     }
-                    
+
                     // Segmented control for time period selection
                     Picker("Time Period", selection: $selectedTimePeriod) {
                         ForEach(TimePeriod.allCases, id: \.self) { period in
@@ -89,7 +90,7 @@ struct ContentView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding([.leading, .trailing, .bottom])
-                    
+
                     // Display date range and navigation arrows
                     HStack {
                         Button(action: {
@@ -117,43 +118,89 @@ struct ContentView: View {
                         TransactionList(items: filteredItems, filteredByCategory: selectedCategory)
                     }
                 }
-                .blur(radius: showOptions ? 3 : 0)
-                
+                .blur(radius: showOptions || showMenuOptions ? 3 : 0)
+                .disabled(showOptions || showMenuOptions) // Disable interactions when options are shown
+
                 // Fade out and blur the rest of the page when options are shown
-                if showOptions {
+                if showOptions || showMenuOptions {
                     Color.white.opacity(0.6)
                         .edgesIgnoringSafeArea(.all)
                         .onTapGesture {
                             withAnimation {
                                 showOptions = false
+                                showMenuOptions = false
                             }
                         }
                 }
 
                 VStack {
-                    // The circular button
-                    Button(action: {
-                        withAnimation {
-                            showOptions.toggle()
+                    HStack {
+                        // The circular button
+                        Button(action: {
+                            withAnimation {
+                                showOptions.toggle()
+                                showMenuOptions = false // Ensure menu options are hidden
+                            }
+                        }) {
+                            Image(systemName: "plus")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding()
+                                .background(Color(.systemGreen).opacity(0.2))
+                                .clipShape(Circle())
                         }
-                    }) {
-                        Image(systemName: "plus")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding()
-                            .background(Color(.systemGreen).opacity(0.2))
-                            .clipShape(Circle())
+                        .zIndex(1) // Ensure this button is on top
+                        .opacity(showMenuOptions ? 0.4 : 1) // Fade out when menu options are shown
+                        .disabled(showMenuOptions) // Disable when menu options are shown
+
+                        Spacer()
+
+                        // Menu button
+                        Button(action: {
+                            withAnimation {
+                                showMenuOptions.toggle()
+                                showOptions = false // Ensure add options are hidden
+                            }
+                        }) {
+                            Image(systemName: "line.horizontal.3")
+                                .resizable()
+                                .frame(width: 24, height: 16)
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .zIndex(1) // Ensure this button is on top
+                        .opacity(showOptions ? 0.4 : 1) // Fade out when add options are shown
+                        .disabled(showOptions) // Disable when add options are shown
                     }
-                    
-                    // The pop-up options
-                    if showOptions {
-                        VStack(alignment: .leading, spacing: 10) {
+                    .padding()
+
+                    Spacer()
+                }
+
+                // The pop-up options for adding new transactions
+                if showOptions {
+                    VStack(alignment: .leading, spacing: 10) {
+                        NavigationLink(
+                            destination: NewTransaction().onDisappear {
+                                showOptions = false
+                            },
+                            label: {
+                                Text("Add New Transaction")
+                                    .padding()
+                                    .frame(minWidth: 150)
+                                    .background(Color.gray)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                        )
+                        ForEach(top2Categories, id: \.self) { category in
                             NavigationLink(
-                                destination: NewTransaction().onDisappear {
+                                destination: NewTransaction(selectedCategory: category).onDisappear {
                                     showOptions = false
                                 },
                                 label: {
-                                    Text("Add New Transaction")
+                                    Text(category.name)
                                         .padding()
                                         .frame(minWidth: 150)
                                         .background(Color.gray)
@@ -161,43 +208,41 @@ struct ContentView: View {
                                         .cornerRadius(10)
                                 }
                             )
-                            ForEach(top2Categories, id: \.self) { category in
-                                NavigationLink(
-                                    destination: NewTransaction(selectedCategory: category).onDisappear {
-                                        showOptions = false
-                                    },
-                                    label: {
-                                        Text(category.name)
-                                            .padding()
-                                            .frame(minWidth: 150)
-                                            .background(Color.gray)
-                                            .foregroundColor(.white)
-                                            .cornerRadius(10)
-                                    }
-                                )
-                            }
                         }
-                        .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
                     }
+                    .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
+                    .padding(.top, 80) // Adjust padding to position below the button
+                    .padding(.leading, 16) // Adjust padding to position to the right
                 }
-                .padding()
+
+                // The pop-up options for menu
+                if showMenuOptions {
+                    VStack(alignment: .trailing, spacing: 10) {
+                        Button(action: {
+                            do {
+                                try authState.signOut()
+                                CoreDataManager.shared.deleteAllPersistentStores()
+                                // Set showSignInView to true when signed out
+                                showSignInView = true
+                            } catch {
+                                // Handle error appropriately, e.g., show an alert
+                                print("Error signing out: \(error.localizedDescription)")
+                            }
+                        }) {
+                            Text("Log Out")
+                                .padding()
+                                .frame(minWidth: 150)
+                                .background(Color.gray)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .transition(AnyTransition.scale(scale: 0.5).combined(with: .opacity))
+                    .padding(.top, 80) // Adjust padding to position below the button
+                    .padding(.trailing, 16) // Align to the right with some padding
+                    .frame(maxWidth: .infinity, alignment: .trailing) // Align to the right edge
+                }
             }
-            .navigationBarItems(trailing: Button(action: {
-                do {
-                    try authState.signOut()
-                    CoreDataManager.shared.deleteAllPersistentStores()
-                    // Set showSignInView to true when signed out
-                    showSignInView = true
-                } catch {
-                    // Handle error appropriately, e.g., show an alert
-                    print("Error signing out: \(error.localizedDescription)")
-                }
-            }) {
-                Image(systemName: "power")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(.red)
-            })
         }
         .task {
             TransactionManager.shared.transactionState = transactionState
@@ -221,14 +266,14 @@ struct ContentView: View {
     private func adjustDate(by value: Int) {
         let calendar = Calendar.current
         var newDate: Date?
-        
+
         switch selectedTimePeriod {
         case .week:
             newDate = calendar.date(byAdding: .weekOfYear, value: value, to: currentDate)
         case .month:
             newDate = calendar.date(byAdding: .month, value: value, to: currentDate)
         }
-        
+
         if let newDate = newDate, newDate <= Date() {
             currentDate = newDate
         }
@@ -237,18 +282,18 @@ struct ContentView: View {
     private func isFutureDate() -> Bool {
         let calendar = Calendar.current
         var newDate: Date?
-        
+
         switch selectedTimePeriod {
         case .week:
             newDate = calendar.date(byAdding: .weekOfYear, value: 1, to: currentDate)
         case .month:
             newDate = calendar.date(byAdding: .month, value: 1, to: currentDate)
         }
-        
+
         if let newDate = newDate {
             return newDate > Date()
         }
-        
+
         return false
     }
 }
