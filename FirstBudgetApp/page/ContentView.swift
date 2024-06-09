@@ -59,6 +59,7 @@ struct ContentView: View {
                                endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
 
+<<<<<<< HEAD
                 GeometryReader { geometry in
                     ScrollView {
                         VStack(spacing: 0) {
@@ -77,10 +78,72 @@ struct ContentView: View {
                             Picker("Time Period", selection: $selectedTimePeriod) {
                                 ForEach(TimePeriod.allCases, id: \.self) { period in
                                     Text(period.rawValue).tag(period)
+=======
+                VStack {
+                    if !filteredItems.isEmpty {
+                        PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+                            .frame(height: showBarChart ? 300 : 200) // Adjust height based on bar chart visibility
+                            .padding()
+                    } else {
+                        Text("No data to display")
+                            .frame(height: showBarChart ? 300 : 200) // Adjust height based on bar chart visibility
+                            .padding()
+                    }
+
+                    // Conditionally display the bar chart
+                    if showBarChart {
+                        BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+                    }
+
+                    // Segmented control for time period selection
+                    Picker("Time Period", selection: $selectedTimePeriod) {
+                        ForEach(TimePeriod.allCases, id: \.self) { period in
+                            Text(period.rawValue).tag(period)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding([.leading, .trailing, .bottom])
+
+                    // Display date range and navigation arrows
+                    VStack {
+                        HStack {
+                            Button(action: {
+                                withAnimation {
+                                    adjustDate(by: -1)
+>>>>>>> 0cff70f (added text to hide bar chart)
                                 }
+                            }) {
+                                Image(systemName: "arrow.left")
                             }
+<<<<<<< HEAD
                             .pickerStyle(SegmentedPickerStyle())
                             .padding([.leading, .trailing, .bottom])
+=======
+                            Spacer()
+                            Text(dateRangeString)
+                                .onTapGesture {
+                                    withAnimation {
+                                        showBarChart.toggle()
+                                    }
+                                }
+                            Spacer()
+                            Button(action: {
+                                withAnimation {
+                                    adjustDate(by: 1)
+                                }
+                            }) {
+                                Image(systemName: "arrow.right")
+                            }
+                            .disabled(isFutureDate()) // Disable the button if it navigates to the future
+                        }
+                        .padding(.horizontal)
+
+                        Text(showBarChart ? "Tap to hide bar chart" : "Tap to show bar chart")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.bottom)
+>>>>>>> 0cff70f (added text to hide bar chart)
 
                             // Display date range and navigation arrows
                             HStack {
