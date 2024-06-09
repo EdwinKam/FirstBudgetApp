@@ -150,6 +150,8 @@ struct ContentView: View {
                                 .clipShape(Circle())
                         }
                         .zIndex(1) // Ensure this button is on top
+                        .opacity(showMenuOptions ? 0.4 : 1) // Fade out when menu options are shown
+                        .disabled(showMenuOptions) // Disable when menu options are shown
 
                         Spacer()
 
@@ -168,6 +170,8 @@ struct ContentView: View {
                                 .clipShape(Circle())
                         }
                         .zIndex(1) // Ensure this button is on top
+                        .opacity(showOptions ? 0.4 : 1) // Fade out when add options are shown
+                        .disabled(showOptions) // Disable when add options are shown
                     }
                     .padding()
 
