@@ -80,7 +80,11 @@ struct BarChartView: View {
             AxisMarks(values: .automatic) { value in
                 if let dateValue = value.as(String.self) {
                     AxisValueLabel {
-                        Text(monthFromDateString(yyyymmdd: dateValue) ?? "")
+                        if timeRange == .month {
+                            Text(monthFromDateString(yyyymmdd: dateValue) ?? "")
+                        } else if timeRange == .week {
+                            Text(weekFromDateString(yyyymmdd: dateValue) ?? "")
+                        }
                     }
                 }
             }
@@ -156,6 +160,28 @@ struct BarChartView: View {
             return calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
         case .month:
             return calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+        }
+    }
+    
+    func weekFromDateString(yyyymmdd: String) -> String? {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyyMMdd" // Define the input date format
+
+        if let date = inputFormatter.date(from: yyyymmdd) {
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+            
+            if let startOfWeek = calendar.date(from: components) {
+                let outputFormatter = DateFormatter()
+                outputFormatter.dateFormat = "M/d" // Format for the start of the week
+                
+                let startOfWeekString = outputFormatter.string(from: startOfWeek)
+                return "w\(startOfWeekString)"
+            } else {
+                return nil // Return nil if the start of the week couldn't be determined
+            }
+        } else {
+            return nil // Return nil if the date string is invalid
         }
     }
 }
