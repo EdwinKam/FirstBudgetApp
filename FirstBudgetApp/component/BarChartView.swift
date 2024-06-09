@@ -43,7 +43,7 @@ struct BarChartView: View {
     private var lastFivePeriods: [Date] {
         let calendar = Calendar.current
         var dates: [Date] = []
-        
+
         for i in 0..<5 {
             var components = DateComponents()
             switch timeRange {
@@ -53,10 +53,10 @@ struct BarChartView: View {
                 components.month = -i
             }
             if let date = calendar.date(byAdding: components, to: Date()) {
-                dates.insert(calendar.date(from: calendar.dateComponents([.year, timeRange == .week ? .weekOfYear : .month], from: date))!, at: 0)
+                dates.insert(startOfTimeRange(for: timeRange, from: date), at: 0)
             }
         }
-        
+            
         return dates
     }
     
@@ -145,5 +145,17 @@ struct BarChartView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd" // Format dates as "yyyymmdd"
         return formatter
+    }
+    
+    // copy from contentView
+    private func startOfTimeRange(for timePeriod: TimePeriod, from date: Date) -> Date {
+        let calendar = Calendar.current
+        
+        switch timePeriod {
+        case .week:
+            return calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
+        case .month:
+            return calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+        }
     }
 }
