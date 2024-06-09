@@ -64,7 +64,7 @@ struct BarChartView: View {
             ForEach(lastFivePeriods, id: \.self) { date in
                 let total = groupedTransactions[date] ?? 0.0
                 BarMark(
-                    x: .value("Date", dateFormatter.string(from: date)),
+                    x: .value("Date", yyyymmddFormatter.string(from: date)),
                     y: .value("Total", total)
                 )
 //                .foregroundStyle(barSelection == date ? Self.selectedChartColor : Self.defaultChartColor) // Change color if selected
@@ -73,14 +73,15 @@ struct BarChartView: View {
                         .font(.caption)
                         .foregroundColor(.black)
                 }
-                .accessibilityLabel(dateFormatter.string(from: date))
-                .accessibilityValue("\(total, specifier: "%.2f")")
-//                .accessibilityAddTraits(barSelection == date ? .isSelected : .none)
             }
         }
         .chartXAxis {
             AxisMarks(values: .automatic) { value in
-                AxisValueLabel() // Show the date label below each bar
+                if let dateValue = value.as(String.self) {
+                    AxisValueLabel {
+                        Text(monthFromDateString(yyyymmdd: dateValue) ?? "")
+                    }
+                }
             }
         }
         .chartYAxis {
@@ -98,18 +99,45 @@ struct BarChartView: View {
         .padding(.horizontal, 16) // Add padding on the left and right
         .chartXSelection(value: $barSelection)
         .onChange(of: barSelection, initial: false) { oldValue, newValue in
-            print(newValue)
+            if let newValue {
+                currentDate = dateFromString(yyyymmdd: newValue) ?? Date()
+            }
         }
     }
     
-    private var dateFormatter: DateFormatter {
+    func dateFromString(yyyymmdd: String) -> Date? {
         let formatter = DateFormatter()
-        switch timeRange {
-        case .week:
-            formatter.dateFormat = "MMM d"
-        case .month:
-            formatter.dateFormat = "MMM"
+        formatter.dateFormat = "yyyyMMdd" // Define the date format
+        return formatter.date(from: yyyymmdd)
+    }
+    
+    func monthFromDateString(yyyymmdd: String) -> String? {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyyMMdd" // Define the input date format
+
+        if let date = inputFormatter.date(from: yyyymmdd) {
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "MMM" // Format to get the short month name
+            return outputFormatter.string(from: date)
+        } else {
+            return nil // Return nil if the date string is invalid
         }
+    }
+    
+//    private var dateFormatter: DateFormatter {
+//        let formatter = DateFormatter()
+//        switch timeRange {
+//        case .week:
+//            formatter.dateFormat = "MMM d"
+//        case .month:
+//            formatter.dateFormat = "MMM"
+//        }
+//        return formatter
+//    }
+    
+    private var yyyymmddFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd" // Format dates as "yyyymmdd"
         return formatter
     }
 }
