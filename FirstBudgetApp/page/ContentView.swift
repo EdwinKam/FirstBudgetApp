@@ -64,12 +64,12 @@ struct ContentView: View {
                         PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                             .frame(height: 300)
                             .padding()
-                        BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                     } else {
                         Text("No data to display")
                             .frame(height: 300)
                             .padding()
                     }
+                    BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
 
                     // Segmented control for time period selection
                     Picker("Time Period", selection: $selectedTimePeriod) {

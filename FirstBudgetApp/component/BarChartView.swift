@@ -112,6 +112,9 @@ struct BarChartView: View {
         .onChange(of: timeRange, initial: true ) { _, _ in
             selectedBarSelection = findSelectedBarSelection(for: currentDate)
         }
+        .onChange(of: currentDate, initial: true ) { _, newValue in
+            selectedBarSelection = findSelectedBarSelection(for: newValue)
+        }
     }
     
     func findSelectedBarSelection(for date: Date) -> String? {
