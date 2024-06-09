@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var showOptions = false // State to toggle the options
     @State private var showMenuOptions = false // State to toggle the menu options
     @State private var selectedTimePeriod: TimePeriod = .week // State for selected time period
-    @State private var currentDate = Date() // State for current date for time period navigation
+    @State var currentDate = Date() // State for current date for time period navigation
 
     // Filtered items based on the selected time period
     private var filteredItems: [TransactionItem] {
@@ -47,19 +47,7 @@ struct ContentView: View {
 
     // Computed property to get the date range string based on the selected time period
     private var dateRangeString: String {
-        let calendar = Calendar.current
-        let formatter = DateFormatter()
-
-        switch selectedTimePeriod {
-        case .week:
-            formatter.dateStyle = .short
-            let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDate))!
-            let endOfWeek = calendar.date(byAdding: .day, value: 6, to: startOfWeek)!
-            return "\(formatter.string(from: startOfWeek)) - \(formatter.string(from: endOfWeek))"
-        case .month:
-            formatter.dateFormat = "MMMM yyyy"
-            return formatter.string(from: currentDate)
-        }
+        return getDayRangeString(timePeriod: selectedTimePeriod, date: currentDate)
     }
 
     var body: some View {
@@ -81,6 +69,7 @@ struct ContentView: View {
                             .frame(height: 300)
                             .padding()
                     }
+                    BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
 
                     // Segmented control for time period selection
                     Picker("Time Period", selection: $selectedTimePeriod) {
@@ -295,6 +284,33 @@ struct ContentView: View {
         }
 
         return false
+    }
+    
+    func startOfTimeRange(for timePeriod: TimePeriod, from date: Date) -> Date {
+        let calendar = Calendar.current
+        
+        switch timePeriod {
+        case .week:
+            return calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
+        case .month:
+            return calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+        }
+    }
+    
+    func getDayRangeString(timePeriod: TimePeriod, date: Date) -> String {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        
+        switch timePeriod {
+        case .week:
+            formatter.dateStyle = .short
+            let startOfWeek = startOfTimeRange(for: .week, from: date)
+            let endOfWeek = calendar.date(byAdding: .day, value: 6, to: startOfWeek)!
+            return "\(formatter.string(from: startOfWeek)) - \(formatter.string(from: endOfWeek))"
+        case .month:
+            formatter.dateFormat = "MMMM yyyy"
+            return formatter.string(from: date)
+        }
     }
 }
 

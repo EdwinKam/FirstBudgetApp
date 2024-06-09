@@ -11,6 +11,7 @@
 		430C4F9B2C0ECCBF00003A18 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9A2C0ECCBF00003A18 /* CoreDataManager.swift */; };
 		430C4F9E2C141F8300003A18 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9D2C141F8300003A18 /* AuthState.swift */; };
 		430C4FA02C14249E00003A18 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4F9F2C14249E00003A18 /* ProfileManager.swift */; };
+		430C4FA52C152E2D00003A18 /* BarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430C4FA42C152E2D00003A18 /* BarChartView.swift */; };
 		431FAFC02C0D460D00B12086 /* TimePeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFBF2C0D460D00B12086 /* TimePeriod.swift */; };
 		431FAFC22C0D4B7300B12086 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 431FAFC12C0D4B7300B12086 /* Launch Screen.storyboard */; };
 		431FAFC72C0D8A0700B12086 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 431FAFC62C0D8A0700B12086 /* FirebaseAnalytics */; };
@@ -70,6 +71,7 @@
 		430C4F9A2C0ECCBF00003A18 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		430C4F9D2C141F8300003A18 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
 		430C4F9F2C14249E00003A18 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
+		430C4FA42C152E2D00003A18 /* BarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartView.swift; sourceTree = "<group>"; };
 		431FAFBF2C0D460D00B12086 /* TimePeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePeriod.swift; sourceTree = "<group>"; };
 		431FAFC12C0D4B7300B12086 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		431FAFCC2C0D8D6D00B12086 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				43D8E27A2C055A58005AE92F /* PieChartView.swift */,
 				43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */,
 				432C690F2C06FBF100A79661 /* SelectCategoryView.swift */,
+				430C4FA42C152E2D00003A18 /* BarChartView.swift */,
 			);
 			path = component;
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				431FAFE62C0EBF8300B12086 /* TransactionManager.swift in Sources */,
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
 				430C4F9E2C141F8300003A18 /* AuthState.swift in Sources */,
+				430C4FA52C152E2D00003A18 /* BarChartView.swift in Sources */,
 				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,
 				432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,
