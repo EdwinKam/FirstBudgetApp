@@ -99,15 +99,27 @@ struct BarChartView: View {
         }
         .padding(.horizontal, 16) // Add padding on the left and right
         .chartXSelection(value: $barSelection)
-        .onAppear {
-            barSelection = yyyymmddFormatter.string(from: currentDate)
-        }
         .onChange(of: barSelection, initial: false) { oldValue, newValue in
             if let newValue {
                 currentDate = dateFromString(yyyymmdd: newValue) ?? Date()
-                selectedBarSelection = barSelection;
+                selectedBarSelection = barSelection
             }
         }
+        .onChange(of: timeRange, initial: true ) { _, _ in
+            selectedBarSelection = findSelectedBarSelection(for: currentDate)
+        }
+    }
+    
+    func findSelectedBarSelection(for date: Date) -> String? {
+        let calendar = Calendar.current
+        var startOfPeriod: Date
+        switch timeRange {
+        case .week:
+            startOfPeriod = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
+        case .month:
+            startOfPeriod = calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+        }
+        return yyyymmddFormatter.string(from: startOfPeriod)
     }
     
     func dateFromString(yyyymmdd: String) -> Date? {
