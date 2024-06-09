@@ -3,12 +3,14 @@ import Charts
 
 struct BarChartView: View {
     let transactionItems: [TransactionItem]
-    @State private var barSelection: Double?
+    @Binding var currentDate: Date // Binding for current date
+    @State private var barSelection: String?
     @State private var clickCount: Int = 0
     let timeRange: TimePeriod // Existing parameter for time range
     let timeRangeString: String // New parameter for time range string
 
-    private static let chartColor: Color = .gray // Define a constant grey color
+    private static let defaultChartColor: Color = .gray // Default grey color
+    private static let selectedChartColor: Color = .green // Selected green color
 
     // Computed property to group transactions by time range
     private var groupedTransactions: [Date: Double] {
@@ -25,7 +27,6 @@ struct BarChartView: View {
             case .month:
                 startOfPeriod = calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
             }
-            
             grouped[startOfPeriod, default: 0.0] += item.amount
         }
         
@@ -66,12 +67,15 @@ struct BarChartView: View {
                     x: .value("Date", dateFormatter.string(from: date)),
                     y: .value("Total", total)
                 )
-                .foregroundStyle(Self.chartColor) // Set the color of each bar to grey
+//                .foregroundStyle(barSelection == date ? Self.selectedChartColor : Self.defaultChartColor) // Change color if selected
                 .annotation(position: .top) {
                     Text(String(format: "%.2f", total))
                         .font(.caption)
                         .foregroundColor(.black)
                 }
+                .accessibilityLabel(dateFormatter.string(from: date))
+                .accessibilityValue("\(total, specifier: "%.2f")")
+//                .accessibilityAddTraits(barSelection == date ? .isSelected : .none)
             }
         }
         .chartXAxis {
@@ -92,6 +96,10 @@ struct BarChartView: View {
                 .frame(height: 150) // Reduce the height of the chart by 50%
         }
         .padding(.horizontal, 16) // Add padding on the left and right
+        .chartXSelection(value: $barSelection)
+        .onChange(of: barSelection, initial: false) { oldValue, newValue in
+            print(newValue)
+        }
     }
     
     private var dateFormatter: DateFormatter {

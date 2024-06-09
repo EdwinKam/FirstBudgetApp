@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var showOptions = false // State to toggle the options
     @State private var showMenuOptions = false // State to toggle the menu options
     @State private var selectedTimePeriod: TimePeriod = .week // State for selected time period
-    @State private var currentDate = Date() // State for current date for time period navigation
+    @State var currentDate = Date() // State for current date for time period navigation
 
     // Filtered items based on the selected time period
     private var filteredItems: [TransactionItem] {
@@ -76,7 +76,7 @@ struct ContentView: View {
                         PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                             .frame(height: 300)
                             .padding()
-                        BarChartView(transactionItems: transactionState.transactionItems, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+                        BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
                     } else {
                         Text("No data to display")
                             .frame(height: 300)
