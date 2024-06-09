@@ -8,7 +8,7 @@ struct BarChartView: View {
     let timeRange: TimePeriod // Existing parameter for time range
     let timeRangeString: String // New parameter for time range string
 
-    private static let chartColors: [Color] = [.red, .green, .blue, .orange, .purple]
+    private static let chartColor: Color = .gray // Define a constant grey color
 
     // Computed property to group transactions by time range
     private var groupedTransactions: [Date: Double] {
@@ -66,7 +66,7 @@ struct BarChartView: View {
                     x: .value("Date", dateFormatter.string(from: date)),
                     y: .value("Total", total)
                 )
-                .foregroundStyle(Self.chartColors.randomElement()!) // Random color for each bar
+                .foregroundStyle(Self.chartColor) // Set the color of each bar to grey
                 .annotation(position: .top) {
                     Text(String(format: "%.2f", total))
                         .font(.caption)
