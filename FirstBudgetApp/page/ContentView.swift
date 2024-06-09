@@ -15,8 +15,9 @@ struct ContentView: View {
     @State private var selectedCategory: TransactionCategory? // New state for selected category
     @State private var showOptions = false // State to toggle the options
     @State private var showMenuOptions = false // State to toggle the menu options
-    @State private var selectedTimePeriod: TimePeriod = .week // State for selected time period
+    @State private var selectedTimePeriod: TimePeriod = .month // State for selected time period
     @State var currentDate = Date() // State for current date for time period navigation
+    @State private var showBarChart = true // State to toggle the bar chart visibility
 
     // Filtered items based on the selected time period
     private var filteredItems: [TransactionItem] {
@@ -62,14 +63,18 @@ struct ContentView: View {
                 VStack {
                     if !filteredItems.isEmpty {
                         PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
-                            .frame(height: 300)
+                            .frame(height: showBarChart ? 300 : 200) // Adjust height based on bar chart visibility
                             .padding()
                     } else {
                         Text("No data to display")
-                            .frame(height: 300)
+                            .frame(height: showBarChart ? 300 : 200) // Adjust height based on bar chart visibility
                             .padding()
                     }
-                    BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+
+                    // Conditionally display the bar chart
+                    if showBarChart {
+                        BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+                    }
 
                     // Segmented control for time period selection
                     Picker("Time Period", selection: $selectedTimePeriod) {
@@ -91,6 +96,11 @@ struct ContentView: View {
                         }
                         Spacer()
                         Text(dateRangeString)
+                            .onTapGesture {
+                                withAnimation {
+                                    showBarChart.toggle()
+                                }
+                            }
                         Spacer()
                         Button(action: {
                             withAnimation {
