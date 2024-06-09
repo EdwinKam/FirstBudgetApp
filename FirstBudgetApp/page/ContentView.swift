@@ -86,32 +86,39 @@ struct ContentView: View {
                     .padding([.leading, .trailing, .bottom])
 
                     // Display date range and navigation arrows
-                    HStack {
-                        Button(action: {
-                            withAnimation {
-                                adjustDate(by: -1)
-                            }
-                        }) {
-                            Image(systemName: "arrow.left")
-                        }
-                        Spacer()
-                        Text(dateRangeString)
-                            .onTapGesture {
+                    VStack {
+                        HStack {
+                            Button(action: {
                                 withAnimation {
-                                    showBarChart.toggle()
+                                    adjustDate(by: -1)
                                 }
+                            }) {
+                                Image(systemName: "arrow.left")
                             }
-                        Spacer()
-                        Button(action: {
-                            withAnimation {
-                                adjustDate(by: 1)
+                            Spacer()
+                            Text(dateRangeString)
+                                .onTapGesture {
+                                    withAnimation {
+                                        showBarChart.toggle()
+                                    }
+                                }
+                            Spacer()
+                            Button(action: {
+                                withAnimation {
+                                    adjustDate(by: 1)
+                                }
+                            }) {
+                                Image(systemName: "arrow.right")
                             }
-                        }) {
-                            Image(systemName: "arrow.right")
+                            .disabled(isFutureDate()) // Disable the button if it navigates to the future
                         }
-                        .disabled(isFutureDate()) // Disable the button if it navigates to the future
+                        .padding(.horizontal)
+
+                        Text(showBarChart ? "Tap to hide bar chart" : "Tap to show bar chart")
+                            .font(.caption)
+                            .foregroundColor(.gray)
                     }
-                    .padding()
+                    .padding(.bottom)
 
                     if !filteredItems.isEmpty {
                         TransactionList(items: filteredItems, filteredByCategory: selectedCategory)
