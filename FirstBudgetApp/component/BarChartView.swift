@@ -5,6 +5,7 @@ struct BarChartView: View {
     let transactionItems: [TransactionItem]
     @Binding var currentDate: Date // Binding for current date
     @State private var barSelection: String?
+    @State private var selectedBarSelection: String?
     @State private var clickCount: Int = 0
     let timeRange: TimePeriod // Existing parameter for time range
     let timeRangeString: String // New parameter for time range string
@@ -67,7 +68,7 @@ struct BarChartView: View {
                     x: .value("Date", yyyymmddFormatter.string(from: date)),
                     y: .value("Total", total)
                 )
-//                .foregroundStyle(barSelection == date ? Self.selectedChartColor : Self.defaultChartColor) // Change color if selected
+                .foregroundStyle(selectedBarSelection == yyyymmddFormatter.string(from: date) ? Self.selectedChartColor : Self.defaultChartColor) // Change color if selected
                 .annotation(position: .top) {
                     Text(String(format: "%.2f", total))
                         .font(.caption)
@@ -98,9 +99,13 @@ struct BarChartView: View {
         }
         .padding(.horizontal, 16) // Add padding on the left and right
         .chartXSelection(value: $barSelection)
+        .onAppear {
+            barSelection = yyyymmddFormatter.string(from: currentDate)
+        }
         .onChange(of: barSelection, initial: false) { oldValue, newValue in
             if let newValue {
                 currentDate = dateFromString(yyyymmdd: newValue) ?? Date()
+                selectedBarSelection = barSelection;
             }
         }
     }
@@ -123,17 +128,6 @@ struct BarChartView: View {
             return nil // Return nil if the date string is invalid
         }
     }
-    
-//    private var dateFormatter: DateFormatter {
-//        let formatter = DateFormatter()
-//        switch timeRange {
-//        case .week:
-//            formatter.dateFormat = "MMM d"
-//        case .month:
-//            formatter.dateFormat = "MMM"
-//        }
-//        return formatter
-//    }
     
     private var yyyymmddFormatter: DateFormatter {
         let formatter = DateFormatter()
