@@ -30,6 +30,7 @@
 		431FAFE62C0EBF8300B12086 /* TransactionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFE52C0EBF8300B12086 /* TransactionManager.swift */; };
 		432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C690F2C06FBF100A79661 /* SelectCategoryView.swift */; };
 		4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4377DC102C03B57300B12B05 /* NewTransaction.swift */; };
+		43AA0B3A2C17DDB500B7ADEF /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AA0B392C17DDB500B7ADEF /* logo.png */; };
 		43BC38912C031738009CF151 /* FirstBudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */; };
 		43BC38932C031738009CF151 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BC38922C031738009CF151 /* ContentView.swift */; };
 		43BC38952C031738009CF151 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43BC38942C031738009CF151 /* Assets.xcassets */; };
@@ -84,6 +85,7 @@
 		431FAFE52C0EBF8300B12086 /* TransactionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionManager.swift; sourceTree = "<group>"; };
 		432C690F2C06FBF100A79661 /* SelectCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryView.swift; sourceTree = "<group>"; };
 		4377DC102C03B57300B12B05 /* NewTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTransaction.swift; sourceTree = "<group>"; };
+		43AA0B392C17DDB500B7ADEF /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = ../../../../Downloads/logo.png; sourceTree = "<group>"; };
 		43BC388D2C031738009CF151 /* FirstBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirstBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstBudgetAppApp.swift; sourceTree = "<group>"; };
 		43BC38922C031738009CF151 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 				4377DC0F2C03B53300B12B05 /* page */,
 				43BC38902C031738009CF151 /* FirstBudgetAppApp.swift */,
 				43BC38942C031738009CF151 /* Assets.xcassets */,
+				43AA0B392C17DDB500B7ADEF /* logo.png */,
 				43BC38992C031738009CF151 /* Persistence.swift */,
 				43BC389B2C031738009CF151 /* FirstBudgetApp.xcdatamodeld */,
 				43BC38962C031738009CF151 /* Preview Content */,
@@ -396,6 +399,7 @@
 			files = (
 				431FAFC22C0D4B7300B12086 /* Launch Screen.storyboard in Resources */,
 				431FAFCD2C0D8D6D00B12086 /* GoogleService-Info.plist in Resources */,
+				43AA0B3A2C17DDB500B7ADEF /* logo.png in Resources */,
 				43BC38982C031738009CF151 /* Preview Assets.xcassets in Resources */,
 				43BC38952C031738009CF151 /* Assets.xcassets in Resources */,
 			);
