@@ -45,11 +45,39 @@ class CategoryManager {
     }
     
     func fetchCategories(authState: AuthState) async throws -> [TransactionCategory] {
-        return try await fetchCategoriesFromFirebase(authState: authState)
+        // If the cache is not empty, return the cached categories
+        if !categoryCache.isEmpty {
+            return Array(categoryCache.values)
+        }
+        
+        // If the cache is empty, fetch from Firebase
+        let categories = try await fetchCategoriesFromFirebase(authState: authState)
+        
+        // Populate the cache
+        for category in categories {
+            categoryCache[category.id.uuidString] = category
+        }
+        
+        return categories
     }
     
     func fetchCategoryById(categoryId: String, authState: AuthState) async throws -> TransactionCategory? {
-        return try await fetchCategoryByIdFromFirebase(categoryId: categoryId, authState: authState)
+        // Check the cache first
+        if let cachedCategory = categoryCache[categoryId] {
+            return cachedCategory
+        }
+        
+        // If the cache is empty, fetch all categories from Firebase
+        if categoryCache.isEmpty {
+            print("Cache is empty, fetching all categories from Firebase")
+            let categories = try await fetchCategoriesFromFirebase(authState: authState)
+            // Populate the cache
+            for category in categories {
+                categoryCache[category.id.uuidString] = category
+            }
+        }
+
+        return categoryCache[categoryId]
     }
     
     func updateCategory(category: TransactionCategory, name: String, authState: AuthState) -> TransactionCategory {
@@ -109,7 +137,9 @@ class CategoryManager {
         try await userCategoriesRef.document(category.id.uuidString).setData(categoryData)
     }
 
+    // deprecated
     private func fetchCategoryByIdFromFirebase(categoryId: String, authState: AuthState) async throws -> TransactionCategory? {
+        print("using deprecated fetchCategoryByIdFromFirebase")
         guard let auth = authState.authUser else {
             throw URLError(.badServerResponse)
         }
@@ -140,6 +170,7 @@ class CategoryManager {
     }
     
     private func fetchCategoriesFromFirebase(authState: AuthState) async throws -> [TransactionCategory] {
+        print("fetching all category from firebase")
         guard let auth = authState.authUser else {
             throw URLError(.badServerResponse)
         }
@@ -161,8 +192,6 @@ class CategoryManager {
             category.name = name
             return category
         }
-        print("firebase category")
-        print(firestoreCategories.map { $0.name })
         return firestoreCategories
     }
     
