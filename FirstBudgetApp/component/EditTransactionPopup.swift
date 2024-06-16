@@ -8,10 +8,12 @@ struct EditTransactionPopup: View {
 
     @State private var isEditing: Bool = false
     @State private var updatedDescription: String
+    @State private var updatedAmount: String
 
     init(transaction: TransactionItem) {
         self.transaction = transaction
         _updatedDescription = State(initialValue: transaction.transactionDescription)
+        _updatedAmount = State(initialValue: String(transaction.amount))
     }
 
     var body: some View {
@@ -63,13 +65,23 @@ struct EditTransactionPopup: View {
                             TextField("", text: $updatedDescription)
                                 .highlight(isEnable: true)
                         } else {
-                            Text("\(transaction.transactionDescription)")
+                            Text(transaction.transactionDescription)
                                 .highlight(isEnable: false)
                         }
                     }
 
-                    Text("Amount: \(transaction.amount, specifier: "%.2f")")
-                        .foregroundColor(Color(.label)) // Adapts to dark mode
+                    HStack(spacing: 0) {
+                        Text("Amount: ")
+                            .foregroundColor(Color(.label)) // Adapts to dark mode
+                        if isEditing {
+                            TextField("", text: $updatedAmount)
+                                .keyboardType(.decimalPad)
+                                .highlight(isEnable: true)
+                        } else {
+                            Text("\(transaction.amount, specifier: "%.2f")")
+                                .highlight(isEnable: false)
+                        }
+                    }
 
                     Text("Category: \(transaction.category?.name ?? "No Category")")
                         .foregroundColor(Color(.label)) // Adapts to dark mode
@@ -107,6 +119,12 @@ struct EditTransactionPopup: View {
     private func updateTransaction() {
         withAnimation {
             transaction.transactionDescription = updatedDescription
+            if let amount = Double(updatedAmount) {
+                transaction.amount = amount
+            } else {
+                print("Invalid amount entered")
+                return
+            }
             do {
                 try TransactionManager.shared.updateTranscation(transaction: transaction, authState: authState)
             } catch {
