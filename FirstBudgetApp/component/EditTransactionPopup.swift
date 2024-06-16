@@ -28,14 +28,20 @@ struct EditTransactionPopup: View {
             VStack(spacing: 16) {
                 HStack {
                     Spacer()
+
+                    Text(isEditing ? "Edit Transaction" : "Transaction Details")
+                        .font(.headline)
+                        .foregroundColor(Color(.label)) // Adapts to dark mode
+
+                    Spacer()
+
                     if isEditing {
                         Button(action: {
                             withAnimation {
-                                updateTransaction()
-                                isEditing = false
+                                discardChanges()
                             }
                         }) {
-                            Image(systemName: "checkmark")
+                            Image(systemName: "xmark")
                                 .resizable()
                                 .frame(width: 24, height: 24)
                                 .foregroundColor(Color(.systemGray))
@@ -44,7 +50,7 @@ struct EditTransactionPopup: View {
                     } else {
                         Button(action: {
                             withAnimation {
-                                isEditing = true
+                                isEditing.toggle()
                             }
                         }) {
                             Image(systemName: "pencil")
@@ -55,11 +61,8 @@ struct EditTransactionPopup: View {
                         }
                     }
                 }
-
-                Text("Edit Transaction")
-                    .font(.headline)
-                    .foregroundColor(Color(.label)) // Adapts to dark mode
-                    .padding(.top, 20)
+                .padding(.top, 20)
+                .padding(.horizontal)
 
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 0) {
@@ -120,48 +123,71 @@ struct EditTransactionPopup: View {
                 }
                 .padding()
 
-                HStack {
-                    Button(action: deleteTransaction) {
-                        Text("Delete")
-                            .padding()
-                            .background(Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
+                if isEditing {
+                    HStack {
+                        Button(action: deleteTransaction) {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(.red)
+                                .padding()
+                        }
 
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Text("Close")
-                            .padding()
-                            .background(Color(.systemGray)) // Adapts to dark mode
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
+                        Spacer()
+
+                        Button(action: updateTransaction) {
+                            Image(systemName: "checkmark")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(.green)
+                                .padding()
+                        }
                     }
+                    .padding(.horizontal)
+                } else {
+                    HStack {
+                        Spacer()
+
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Text("Close")
+                                .padding()
+                                .background(Color(.systemGray)) // Adapts to dark mode
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
             .padding(.horizontal, 20)
         }
     }
 
     private func updateTransaction() {
-        withAnimation {
-            transaction.transactionDescription = updatedDescription
-            if let amount = Double(updatedAmount) {
-                transaction.amount = amount
-            } else {
-                print("Invalid amount entered")
-                return
-            }
-            transaction.createdAt = updatedDate
-            do {
-                try TransactionManager.shared.updateTranscation(transaction: transaction, authState: authState)
-            } catch {
-                let nsError = error as NSError
-                print("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+        transaction.transactionDescription = updatedDescription
+        if let amount = Double(updatedAmount) {
+            transaction.amount = amount
+        } else {
+            print("Invalid amount entered")
+            return
         }
+        transaction.createdAt = updatedDate
+        do {
+            try TransactionManager.shared.updateTranscation(transaction: transaction, authState: authState)
+            isEditing = false
+        } catch {
+            let nsError = error as NSError
+            print("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+
+    private func discardChanges() {
+        updatedDescription = transaction.transactionDescription
+        updatedAmount = String(transaction.amount)
+        updatedDate = transaction.createdAt ?? Date()
+        isEditing = false
     }
 
     private func deleteTransaction() {
@@ -202,4 +228,5 @@ struct EditTransactionPopup: View {
 //    transaction.category?.name = "Sample Category"
 //
 //    return EditTransactionPopup(transaction: transaction)
-//        .environment(\.managedObject
+//        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//}
