@@ -77,6 +77,10 @@ struct NewTransaction: View {
                             .padding(.leading, 20)
                             .sheet(isPresented: $isPresentingDateSheet) {
                                 SelectDateView(selectedDate: $selectedDate)
+                                    .presentationDragIndicator(.visible)
+                            }
+                            .onChange(of: selectedDate, initial: false) {
+                                isPresentingDateSheet = false
                             }
                             
                             Text("What category is it?")
@@ -172,7 +176,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, authState: authState)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, createdAt: selectedDate, authState: authState)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil

@@ -5,7 +5,7 @@ struct SelectDateView: View {
     @State private var currentMonth: Date = Date()
 
     private let calendar = Calendar.current
-    private let colors = (selected: Color.blue, default: Color.clear, text: Color.black)
+    private let colors = (selected: Color.blue, default: Color.clear, text: Color.primary)
 
     var body: some View {
         VStack {
@@ -50,7 +50,6 @@ struct SelectDateView: View {
                             .foregroundColor(isSameDay(date1: date, date2: selectedDate) ? .white : colors.text)
                             .onTapGesture {
                                 selectedDate = date
-                                print("clicking")
                             }
                     } else {
                         Text("")
@@ -124,5 +123,6 @@ struct SelectDateView: View {
 struct SelectDateView_Previews: PreviewProvider {
     static var previews: some View {
         SelectDateView(selectedDate: .constant(Date()))
+            .preferredColorScheme(.dark) // For dark mode preview
     }
 }
