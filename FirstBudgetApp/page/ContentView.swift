@@ -59,59 +59,63 @@ struct ContentView: View {
                                endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
 
-                ScrollView {
-                    VStack {
-                        if !filteredItems.isEmpty {
-                            PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
-                                .frame(height: 300)
-                                .padding()
-                        } else {
-                            Text("No data to display")
-                                .frame(height: 300)
-                                .padding()
-                        }
-                        BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
-
-                        // Segmented control for time period selection
-                        Picker("Time Period", selection: $selectedTimePeriod) {
-                            ForEach(TimePeriod.allCases, id: \.self) { period in
-                                Text(period.rawValue).tag(period)
+                GeometryReader { geometry in
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            if !filteredItems.isEmpty {
+                                PieChartView(transactionItems: filteredItems, selectedCategory: $selectedCategory, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
+                                    .frame(height: 300)
+                                    .padding()
+                            } else {
+                                Text("No data to display")
+                                    .frame(height: 300)
+                                    .padding()
                             }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding([.leading, .trailing, .bottom])
+                            BarChartView(transactionItems: transactionState.transactionItems, currentDate: $currentDate, timeRange: selectedTimePeriod, timeRangeString: dateRangeString)
 
-                        // Display date range and navigation arrows
-                        HStack {
-                            Button(action: {
-                                withAnimation {
-                                    adjustDate(by: -1)
+                            // Segmented control for time period selection
+                            Picker("Time Period", selection: $selectedTimePeriod) {
+                                ForEach(TimePeriod.allCases, id: \.self) { period in
+                                    Text(period.rawValue).tag(period)
                                 }
-                            }) {
-                                Image(systemName: "arrow.left")
                             }
-                            Spacer()
-                            Text(dateRangeString)
-                            Spacer()
-                            Button(action: {
-                                withAnimation {
-                                    adjustDate(by: 1)
-                                }
-                            }) {
-                                Image(systemName: "arrow.right")
-                            }
-                            .disabled(isFutureDate()) // Disable the button if it navigates to the future
-                        }
-                        .padding()
+                            .pickerStyle(SegmentedPickerStyle())
+                            .padding([.leading, .trailing, .bottom])
 
-                        if !filteredItems.isEmpty {
-                            // Use a fixed height for the TransactionList
-                            TransactionList(items: filteredItems, filteredByCategory: selectedCategory)
-                                .frame(maxHeight: UIScreen.main.bounds.height * 0.75)
+                            // Display date range and navigation arrows
+                            HStack {
+                                Button(action: {
+                                    withAnimation {
+                                        adjustDate(by: -1)
+                                    }
+                                }) {
+                                    Image(systemName: "arrow.left")
+                                }
+                                Spacer()
+                                Text(dateRangeString)
+                                Spacer()
+                                Button(action: {
+                                    withAnimation {
+                                        adjustDate(by: 1)
+                                    }
+                                }) {
+                                    Image(systemName: "arrow.right")
+                                }
+                                .disabled(isFutureDate()) // Disable the button if it navigates to the future
+                            }
+                            .padding()
+                            
+                            if !filteredItems.isEmpty {
+                                TransactionList(items: filteredItems, filteredByCategory: selectedCategory)
+                                    .frame(maxHeight: geometry.size.height * 0.75)
+                            }
+
+                            Spacer(minLength: 0) // Ensure the VStack takes up the full height of the screen
                         }
+                        .frame(minHeight: geometry.size.height) // Ensure the VStack takes up the full height of the screen
+                        .blur(radius: showOptions || showMenuOptions ? 3 : 0)
+                        .disabled(showOptions || showMenuOptions) // Disable interactions when options are shown
                     }
-                    .blur(radius: showOptions || showMenuOptions ? 3 : 0)
-                    .disabled(showOptions || showMenuOptions) // Disable interactions when options are shown
                 }
 
                 // Fade out and blur the rest of the page when options are shown
