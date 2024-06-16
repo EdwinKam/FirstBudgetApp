@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreData
 
 struct EditTransactionPopup: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -9,11 +10,14 @@ struct EditTransactionPopup: View {
     @State private var isEditing: Bool = false
     @State private var updatedDescription: String
     @State private var updatedAmount: String
+    @State private var updatedDate: Date
+    @State private var isPresentingDateSheet: Bool = false
 
     init(transaction: TransactionItem) {
         self.transaction = transaction
         _updatedDescription = State(initialValue: transaction.transactionDescription)
         _updatedAmount = State(initialValue: String(transaction.amount))
+        _updatedDate = State(initialValue: transaction.createdAt ?? Date())
     }
 
     var body: some View {
@@ -66,7 +70,8 @@ struct EditTransactionPopup: View {
                                 .highlight(isEnable: true)
                         } else {
                             Text(transaction.transactionDescription)
-                                .highlight(isEnable: false)
+                                .font(.body)
+                                .background(Color.clear)
                         }
                     }
 
@@ -79,15 +84,39 @@ struct EditTransactionPopup: View {
                                 .highlight(isEnable: true)
                         } else {
                             Text("\(transaction.amount, specifier: "%.2f")")
-                                .highlight(isEnable: false)
+                                .font(.body)
+                                .background(Color.clear)
                         }
                     }
 
                     Text("Category: \(transaction.category?.name ?? "No Category")")
                         .foregroundColor(Color(.label)) // Adapts to dark mode
 
-                    Text("Date: \(formattedDate(date: transaction.createdAt))")
-                        .foregroundColor(Color(.label)) // Adapts to dark mode
+                    HStack(spacing: 0) {
+                        Text("Date: ")
+                            .foregroundColor(Color(.label)) // Adapts to dark mode
+                        if isEditing {
+                            Text(isToday(date: updatedDate) ? "Today" : formattedDate(date: updatedDate))
+                                .highlight(isEnable: true)
+                                .onTapGesture {
+                                    isPresentingDateSheet = true
+                                }
+                                .sheet(isPresented: $isPresentingDateSheet) {
+                                    SelectDateView(selectedDate: $updatedDate)
+                                        .presentationDragIndicator(.visible)
+                                        .onDisappear {
+                                            isPresentingDateSheet = false
+                                        }
+                                }
+                                .onChange(of: updatedDate, initial: false) {
+                                    isPresentingDateSheet = false
+                                }
+                        } else {
+                            Text(isToday(date: updatedDate) ? "Today" : formattedDate(date: updatedDate))
+                                .font(.body)
+                                .background(Color.clear)
+                        }
+                    }
                 }
                 .padding()
 
@@ -125,6 +154,7 @@ struct EditTransactionPopup: View {
                 print("Invalid amount entered")
                 return
             }
+            transaction.createdAt = updatedDate
             do {
                 try TransactionManager.shared.updateTranscation(transaction: transaction, authState: authState)
             } catch {
@@ -146,6 +176,10 @@ struct EditTransactionPopup: View {
         }
     }
 
+    private func isToday(date: Date) -> Bool {
+        Calendar.current.isDateInToday(date)
+    }
+
     private func formattedDate(date: Date?) -> String {
         guard let date = date else {
             return "Unknown Date"
@@ -157,16 +191,15 @@ struct EditTransactionPopup: View {
     }
 }
 
-#Preview {
-    // Provide a mock TransactionItem for preview purposes
-    let context = PersistenceController.preview.container.viewContext
-    let transaction = TransactionItem(context: context)
-    transaction.transactionDescription = "Sample Transaction"
-    transaction.amount = 100.0
-    transaction.createdAt = nil // Simulate missing createdAt
-    transaction.category = TransactionCategory(context: context)
-    transaction.category?.name = "Sample Category"
-
-    return EditTransactionPopup(transaction: transaction)
-        .environment(\.managedObjectContext, context)
-}
+//#Preview {
+//    // Provide a mock TransactionItem for preview purposes
+//    let context = PersistenceController.preview.container.viewContext
+//    let transaction = TransactionItem(context: context)
+//    transaction.transactionDescription = "Sample Transaction"
+//    transaction.amount = 100.0
+//    transaction.createdAt = nil // Simulate missing createdAt
+//    transaction.category = TransactionCategory(context: context)
+//    transaction.category?.name = "Sample Category"
+//
+//    return EditTransactionPopup(transaction: transaction)
+//        .environment(\.managedObject
