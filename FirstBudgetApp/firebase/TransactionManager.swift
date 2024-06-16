@@ -31,9 +31,9 @@ class TransactionManager {
         return transactions
     }
     
-    func saveTransaction(description: String, amount: Double, category: TransactionCategory, authState: AuthState) throws {
+    func saveTransaction(description: String, amount: Double, category: TransactionCategory, createdAt: Date, authState: AuthState) throws {
         print("trying to save to coredata")
-        let transaction = try saveToCoreData(description: description, amount: amount, category: category)
+        let transaction = try saveToCoreData(description: description, amount: amount, category: category, createdAt: createdAt)
         print("added to coredata")
         // Update the global state
         DispatchQueue.main.async {
@@ -166,13 +166,13 @@ class TransactionManager {
         }
     }
     
-    func saveToCoreData(description: String, amount: Double, category: TransactionCategory) throws -> TransactionItem {
+    func saveToCoreData(description: String, amount: Double, category: TransactionCategory, createdAt: Date) throws -> TransactionItem {
         let context = coreDataManager.viewContext
         let newItem = TransactionItem(context: context)
         newItem.transactionDescription = description
         newItem.amount = amount
         newItem.category = category
-        newItem.createdAt = Date()
+        newItem.createdAt = createdAt
         newItem.id = UUID()
         
         do {

@@ -28,6 +28,7 @@
 		431FAFE22C0EB9CE00B12086 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 431FAFE12C0EB9CE00B12086 /* FirebaseFirestoreSwift */; };
 		431FAFE42C0EBAD500B12086 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFE32C0EBAD500B12086 /* SettingView.swift */; };
 		431FAFE62C0EBF8300B12086 /* TransactionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431FAFE52C0EBF8300B12086 /* TransactionManager.swift */; };
+		43270DF32C1EBB3900640B77 /* SelectDateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43270DF22C1EBB3900640B77 /* SelectDateView.swift */; };
 		432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C690F2C06FBF100A79661 /* SelectCategoryView.swift */; };
 		4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4377DC102C03B57300B12B05 /* NewTransaction.swift */; };
 		43AA0B3A2C17DDB500B7ADEF /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AA0B392C17DDB500B7ADEF /* logo.png */; };
@@ -83,6 +84,7 @@
 		431FAFDC2C0D9D0A00B12086 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		431FAFE32C0EBAD500B12086 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		431FAFE52C0EBF8300B12086 /* TransactionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionManager.swift; sourceTree = "<group>"; };
+		43270DF22C1EBB3900640B77 /* SelectDateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectDateView.swift; sourceTree = "<group>"; };
 		432C690F2C06FBF100A79661 /* SelectCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryView.swift; sourceTree = "<group>"; };
 		4377DC102C03B57300B12B05 /* NewTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTransaction.swift; sourceTree = "<group>"; };
 		43AA0B392C17DDB500B7ADEF /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = ../../../../Downloads/logo.png; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				43D8E27C2C055ACE005AE92F /* EditTransactionPopup.swift */,
 				432C690F2C06FBF100A79661 /* SelectCategoryView.swift */,
 				430C4FA42C152E2D00003A18 /* BarChartView.swift */,
+				43270DF22C1EBB3900640B77 /* SelectDateView.swift */,
 			);
 			path = component;
 			sourceTree = "<group>";
@@ -442,6 +445,7 @@
 				43CCB1E02C0463ED00B62030 /* TransactionCategory+CoreDataProperties.swift in Sources */,
 				430C4F9E2C141F8300003A18 /* AuthState.swift in Sources */,
 				430C4FA52C152E2D00003A18 /* BarChartView.swift in Sources */,
+				43270DF32C1EBB3900640B77 /* SelectDateView.swift in Sources */,
 				43D8E27D2C055ACE005AE92F /* EditTransactionPopup.swift in Sources */,
 				432C69102C06FBF100A79661 /* SelectCategoryView.swift in Sources */,
 				4377DC112C03B57300B12B05 /* NewTransaction.swift in Sources */,

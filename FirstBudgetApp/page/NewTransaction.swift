@@ -13,6 +13,8 @@ struct NewTransaction: View {
     @State private var showDetails: Bool = false
     @FocusState private var isDescriptionFieldFocused: Bool
     @FocusState private var isAmountFieldFocused: Bool
+    @State private var isPresentingDateSheet: Bool = false
+    @State private var selectedDate: Date = Date()
 
     var body: some View {
         NavigationView {
@@ -58,6 +60,29 @@ struct NewTransaction: View {
                         .transition(.move(edge: .leading))
                     } else {
                         VStack(alignment: .leading) {
+                            HStack(spacing: 0) {
+                                Text("Transaction Date: ")
+                                    .font(.body)
+                                    
+                                Text(isToday(date: selectedDate) ? "Today" : formattedDate(date: selectedDate))
+                                    .font(.body)
+                                    .padding(5)
+                                    .background(Color.yellow.opacity(0.3))
+                                    .cornerRadius(5)
+                                    .onTapGesture {
+                                        isPresentingDateSheet = true
+                                    }
+                            }
+                            .padding(.bottom, 20)
+                            .padding(.leading, 20)
+                            .sheet(isPresented: $isPresentingDateSheet) {
+                                SelectDateView(selectedDate: $selectedDate)
+                                    .presentationDragIndicator(.visible)
+                            }
+                            .onChange(of: selectedDate, initial: false) {
+                                isPresentingDateSheet = false
+                            }
+                            
                             Text("What category is it?")
                                 .font(.largeTitle)
                                 .bold()
@@ -151,7 +176,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, authState: authState)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, createdAt: selectedDate, authState: authState)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil
@@ -162,6 +187,17 @@ struct NewTransaction: View {
             print("Unresolved error \(nsError), \(nsError.userInfo)")
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
+    }
+    
+    private func isToday(date: Date) -> Bool {
+        let calendar = Calendar.current
+        return calendar.isDateInToday(date)
+    }
+
+    private func formattedDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter.string(from: date)
     }
 }
 
