@@ -36,12 +36,13 @@ class TransactionManager {
         let transaction = try saveToCoreData(description: description, amount: amount, category: category, createdAt: createdAt)
         print("added to coredata")
         // Update the global state
-        DispatchQueue.main.async {
-            self.transactionState?.transactionItems.append(transaction)
-        }
+        
         Task {
             do {
                 try await self.saveTransactionToFirebase(transaction: transaction, authState: authState)
+                DispatchQueue.main.async {
+                    self.transactionState?.transactionItems.append(transaction)
+                }
             } catch {
                 let nsError = error as NSError
                 print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
@@ -50,17 +51,17 @@ class TransactionManager {
     }
     
     func updateTranscation(transaction: TransactionItem, authState: AuthState) throws {
-        // Update the global state
-        DispatchQueue.main.async {
-            if let index = self.transactionState?.transactionItems.firstIndex(where: { $0.id == transaction.id }) {
-                self.transactionState?.transactionItems[index] = transaction
-            } else {
-                self.transactionState?.transactionItems.append(transaction)
-            }
-        }
         Task {
             do {
                 try await self.saveTransactionToFirebase(transaction: transaction, authState: authState)
+                // Update the global state
+                DispatchQueue.main.async {
+                    if let index = self.transactionState?.transactionItems.firstIndex(where: { $0.id == transaction.id }) {
+                        self.transactionState?.transactionItems[index] = transaction
+                        // make sure the order of transaction change and other component recongize there's a change
+                        self.transactionState?.transactionItems.shuffle()
+                    }
+                }
             } catch {
                 let nsError = error as NSError
                 print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")

@@ -16,6 +16,8 @@ class CategoryManager {
     
     private let coreDataManager = CoreDataManager.shared
     
+    private var categoryCache: [String: TransactionCategory] = [:]
+    
     private init() {}
     
     // MARK: - public function
