@@ -117,6 +117,7 @@ struct ContentView: View {
                         .disabled(showOptions || showMenuOptions) // Disable interactions when options are shown
                     }
                 }
+                .ignoresSafeArea()
 
                 // Fade out and blur the rest of the page when options are shown
                 if showOptions || showMenuOptions {
