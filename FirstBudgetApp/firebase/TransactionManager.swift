@@ -41,7 +41,26 @@ class TransactionManager {
         }
         Task {
             do {
-                try await self.createNewTransactionToFirebase(transaction: transaction, authState: authState)
+                try await self.saveTransactionToFirebase(transaction: transaction, authState: authState)
+            } catch {
+                let nsError = error as NSError
+                print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    func updateTranscation(transaction: TransactionItem, authState: AuthState) throws {
+        // Update the global state
+        DispatchQueue.main.async {
+            if let index = self.transactionState?.transactionItems.firstIndex(where: { $0.id == transaction.id }) {
+                self.transactionState?.transactionItems[index] = transaction
+            } else {
+                self.transactionState?.transactionItems.append(transaction)
+            }
+        }
+        Task {
+            do {
+                try await self.saveTransactionToFirebase(transaction: transaction, authState: authState)
             } catch {
                 let nsError = error as NSError
                 print("Error adding transaction to Firebase: \(nsError), \(nsError.userInfo)")
@@ -68,7 +87,7 @@ class TransactionManager {
 
     // MARK: - Firestore Transaction Management
     
-    func createNewTransactionToFirebase(transaction: TransactionItem, authState: AuthState) async throws {
+    func saveTransactionToFirebase(transaction: TransactionItem, authState: AuthState) async throws {
         guard let auth = authState.authUser else {
             throw URLError(.badServerResponse)
         }
