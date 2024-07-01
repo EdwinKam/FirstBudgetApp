@@ -14,7 +14,7 @@ struct NewTransaction: View {
     @FocusState private var isDescriptionFieldFocused: Bool
     @FocusState private var isAmountFieldFocused: Bool
     @State private var isPresentingDateSheet: Bool = false
-    @State private var selectedDate: Date = Date()
+    @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date()) //today but ignore time
 
     var body: some View {
         NavigationView {
@@ -176,7 +176,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, createdAt: selectedDate, authState: authState)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, transactionTime: selectedDate, authState: authState)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil
@@ -201,6 +201,6 @@ struct NewTransaction: View {
     }
 }
 
-#Preview {
-    NewTransaction().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-}
+//#Preview {
+//    NewTransaction().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//}

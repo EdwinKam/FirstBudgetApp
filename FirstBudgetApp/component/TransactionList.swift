@@ -22,11 +22,9 @@ struct TransactionList: View {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("\(item.transactionDescription)")
-                                if let date = item.createdAt {
-                                    Text(dateFormatter.string(from: date))
-                                        .foregroundColor(.secondary)
-                                        .font(.subheadline)
-                                }
+                                Text(dateFormatter.string(from: item.transactionTime))
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
                             }
                             Spacer()
                             VStack(alignment: .trailing) {
@@ -72,23 +70,26 @@ struct TransactionList: View {
             filtered = Array(items)
         }
         return filtered.sorted {
-            let date1 = $0.createdAt ?? Date()
-            let date2 = $1.createdAt ?? Date()
-            return date1 > date2
+            // First, compare by transactionTime
+            if $0.transactionTime != $1.transactionTime {
+                return $0.transactionTime > $1.transactionTime
+            }
+            // If transactionTime is the same, compare by createdAt
+            return $0.createdAt > $1.createdAt
         }
     }
 }
 
-#Preview {
-    // Provide a mock TransactionItem for preview purposes
-    let context = PersistenceController.preview.container.viewContext
-    let transaction = TransactionItem(context: context)
-    transaction.transactionDescription = "Sample Transaction"
-    transaction.amount = 100.0
-    transaction.category = TransactionCategory(context: context)
-    transaction.category?.name = "Sample Category"
-    transaction.createdAt = Date()
-
-    return TransactionList(items: [transaction], filteredByCategory: nil)
-        .environment(\.managedObjectContext, context)
-}
+//#Preview {
+//    // Provide a mock TransactionItem for preview purposes
+//    let context = PersistenceController.preview.container.viewContext
+//    let transaction = TransactionItem(context: context)
+//    transaction.transactionDescription = "Sample Transaction"
+//    transaction.amount = 100.0
+//    transaction.category = TransactionCategory(context: context)
+//    transaction.category?.name = "Sample Category"
+//    transaction.createdAt = Date()
+//
+//    return TransactionList(items: [transaction], filteredByCategory: nil)
+//        .environment(\.managedObjectContext, context)
+//}

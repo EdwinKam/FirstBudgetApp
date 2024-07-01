@@ -17,7 +17,7 @@ struct EditTransactionPopup: View {
         self.transaction = transaction
         _updatedDescription = State(initialValue: transaction.transactionDescription)
         _updatedAmount = State(initialValue: String(transaction.amount))
-        _updatedDate = State(initialValue: transaction.createdAt ?? Date())
+        _updatedDate = State(initialValue: transaction.transactionTime)
     }
 
     var body: some View {
@@ -173,7 +173,7 @@ struct EditTransactionPopup: View {
             print("Invalid amount entered")
             return
         }
-        transaction.createdAt = updatedDate
+        transaction.transactionTime = updatedDate
         do {
             try TransactionManager.shared.updateTranscation(transaction: transaction, authState: authState)
             isEditing = false
@@ -186,7 +186,7 @@ struct EditTransactionPopup: View {
     private func discardChanges() {
         updatedDescription = transaction.transactionDescription
         updatedAmount = String(transaction.amount)
-        updatedDate = transaction.createdAt ?? Date()
+        updatedDate = transaction.transactionTime
         isEditing = false
     }
 

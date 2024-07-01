@@ -31,9 +31,9 @@ class TransactionManager {
         return transactions
     }
     
-    func saveTransaction(description: String, amount: Double, category: TransactionCategory, createdAt: Date, authState: AuthState) throws {
+    func saveTransaction(description: String, amount: Double, category: TransactionCategory, transactionTime: Date, authState: AuthState) throws {
         print("trying to save to coredata")
-        let transaction = try saveToCoreData(description: description, amount: amount, category: category, createdAt: createdAt)
+        let transaction = try saveToCoreData(description: description, amount: amount, category: category, transactionTime: transactionTime)
         print("added to coredata")
         // Update the global state
         
@@ -99,7 +99,8 @@ class TransactionManager {
             "id": transaction.id.uuidString,
             "amount": transaction.amount,
             "description": transaction.transactionDescription,
-            "createdAt": Timestamp(date: transaction.createdAt ?? Date()),
+            "createdAt": Timestamp(date: transaction.createdAt),
+            "transactionTime": Timestamp(date: transaction.transactionTime),
             "categoryId": transaction.category?.id.uuidString ?? ""
         ]
 
@@ -131,7 +132,8 @@ class TransactionManager {
                   let amount = data["amount"] as? Double,
                   let description = data["description"] as? String,
                   let categoryId = data["categoryId"] as? String,
-                  let createdAt = data["createdAt"] as? Timestamp else {
+                  let createdAt = data["createdAt"] as? Timestamp,
+                  let transactionTime = data["transactionTime"] as? Timestamp else {
                 throw NSError(domain: "TransactionManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode transaction data"])
             }
             
@@ -149,6 +151,7 @@ class TransactionManager {
             transaction.amount = amount
             transaction.transactionDescription = description
             transaction.createdAt = createdAt.dateValue()
+            transaction.transactionTime = transactionTime.dateValue()
             transaction.category = category
             transactions.append(transaction)
         }
@@ -176,7 +179,7 @@ class TransactionManager {
     func fetchFromCoreData() throws -> [TransactionItem] {
         let viewContext = coreDataManager.viewContext
         let fetchRequest: NSFetchRequest<TransactionItem> = TransactionItem.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TransactionItem.createdAt, ascending: false)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TransactionItem.transactionTime, ascending: false)]
 
         do {
             return try viewContext.fetch(fetchRequest)
@@ -186,13 +189,14 @@ class TransactionManager {
         }
     }
     
-    func saveToCoreData(description: String, amount: Double, category: TransactionCategory, createdAt: Date) throws -> TransactionItem {
+    func saveToCoreData(description: String, amount: Double, category: TransactionCategory, transactionTime: Date) throws -> TransactionItem {
         let context = coreDataManager.viewContext
         let newItem = TransactionItem(context: context)
         newItem.transactionDescription = description
         newItem.amount = amount
         newItem.category = category
-        newItem.createdAt = createdAt
+        newItem.createdAt = Date()
+        newItem.transactionTime = transactionTime
         newItem.id = UUID()
         
         do {
