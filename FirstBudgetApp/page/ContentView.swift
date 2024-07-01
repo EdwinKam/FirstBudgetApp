@@ -37,12 +37,29 @@ struct ContentView: View {
 
     // Computed property to get the top 2 popular categories
     private var top2Categories: [TransactionCategory] {
-        let categoryCounts = Dictionary(grouping: filteredItems, by: { $0.category })
-            .mapValues { $0.count }
-            .sorted(by: { $0.value > $1.value })
-            .prefix(2)
-            .compactMap { $0.key }
-        return categoryCounts
+        let categoryData = filteredItems.reduce(into: [TransactionCategory: (count: Int, totalAmount: Double)]()) { result, item in
+            if let category = item.category {
+                let currentData = result[category] ?? (count: 0, totalAmount: 0)
+                result[category] = (count: currentData.count + 1, totalAmount: currentData.totalAmount + item.amount)
+            }
+        }
+        
+        let sortedCategories = categoryData.sorted {
+            if $0.value.count == $1.value.count {
+                if $0.value.totalAmount == $1.value.totalAmount {
+                    // Assuming `categoryID` is a property of `TransactionCategory`
+                    return $0.key.id < $1.key.id
+                } else {
+                    return $0.value.totalAmount > $1.value.totalAmount
+                }
+            } else {
+                return $0.value.count > $1.value.count
+            }
+        }
+        .prefix(2)
+        .compactMap { $0.key }
+        
+        return sortedCategories
     }
 
     // Computed property to get the date range string based on the selected time period
