@@ -17,7 +17,8 @@ extension TransactionItem {
     }
 
     @NSManaged public var amount: Double
-    @NSManaged public var createdAt: Date?
+    @NSManaged public var createdAt: Date
+    @NSManaged public var transactionTime: Date
     @NSManaged public var transactionDescription: String
     @NSManaged public var id: UUID
     @NSManaged public var category: TransactionCategory?

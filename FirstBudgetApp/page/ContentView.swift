@@ -24,13 +24,13 @@ struct ContentView: View {
         let now = currentDate
 
         return transactionState.transactionItems.filter { item in
-            guard let createdAt = item.createdAt else { return false }
+            let transactionTime = item.transactionTime
 
             switch selectedTimePeriod {
             case .week:
-                return calendar.isDate(createdAt, equalTo: now, toGranularity: .weekOfYear)
+                return calendar.isDate(transactionTime, equalTo: now, toGranularity: .weekOfYear)
             case .month:
-                return calendar.isDate(createdAt, equalTo: now, toGranularity: .month)
+                return calendar.isDate(transactionTime, equalTo: now, toGranularity: .month)
             }
         }
     }
@@ -340,6 +340,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView(showSignInView: .constant(true)).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-}
+//#Preview {
+//    ContentView(showSignInView: .constant(true)).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//}

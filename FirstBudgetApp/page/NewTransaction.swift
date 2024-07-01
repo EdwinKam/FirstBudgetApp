@@ -176,7 +176,7 @@ struct NewTransaction: View {
             return
         }
         do {
-            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, createdAt: selectedDate, authState: authState)
+            try TransactionManager.shared.saveTransaction(description: transactionDescription, amount: amountValue, category: category, transactionTime: selectedDate, authState: authState)
             transactionDescription = ""  // Clear the input fields after saving
             amount = ""
             selectedCategory = nil
@@ -201,6 +201,6 @@ struct NewTransaction: View {
     }
 }
 
-#Preview {
-    NewTransaction().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-}
+//#Preview {
+//    NewTransaction().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//}

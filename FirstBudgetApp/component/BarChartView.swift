@@ -19,7 +19,7 @@ struct BarChartView: View {
         let calendar = Calendar.current
         
         for item in transactionItems {
-            guard let date = item.createdAt else { continue }
+            let date = item.transactionTime
             
             var startOfPeriod: Date
             switch timeRange {

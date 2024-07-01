@@ -10,38 +10,38 @@ import CoreData
 struct PersistenceController {
     static let shared = PersistenceController()
 
-    static var preview: PersistenceController = {
-        let result = PersistenceController(inMemory: true)
-        let viewContext = result.container.viewContext
-        let defaultCategories = ["work", "home", "electric", "hobby"]
-        var categories = [TransactionCategory]()
-        
-        for categoryName in defaultCategories {
-            let newCategory = TransactionCategory(context: viewContext)
-            newCategory.id = UUID()
-            newCategory.name = categoryName
-            categories.append(newCategory)
-        }
-
-        // Associate each TransactionItem with a valid category
-        for i in 0..<10 {
-            let newItem = TransactionItem(context: viewContext)
-            newItem.transactionDescription = "sample description \(i)"
-            newItem.amount = 90
-            newItem.createdAt = initializeDate(from: "06/02/2024")
-            if let category = categories.randomElement() {
-                newItem.category = category
-            }
-        }
-
-        do {
-            try viewContext.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
-        return result
-    }()
+//    static var preview: PersistenceController = {
+//        let result = PersistenceController(inMemory: true)
+//        let viewContext = result.container.viewContext
+//        let defaultCategories = ["work", "home", "electric", "hobby"]
+//        var categories = [TransactionCategory]()
+//        
+//        for categoryName in defaultCategories {
+//            let newCategory = TransactionCategory(context: viewContext)
+//            newCategory.id = UUID()
+//            newCategory.name = categoryName
+//            categories.append(newCategory)
+//        }
+//
+//        // Associate each TransactionItem with a valid category
+//        for i in 0..<10 {
+//            let newItem = TransactionItem(context: viewContext)
+//            newItem.transactionDescription = "sample description \(i)"
+//            newItem.amount = 90
+//            newItem.createdAt = initializeDate(from: "06/02/2024")
+//            if let category = categories.randomElement() {
+//                newItem.category = category
+//            }
+//        }
+//
+//        do {
+//            try viewContext.save()
+//        } catch {
+//            let nsError = error as NSError
+//            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+//        }
+//        return result
+//    }()
 
     let container: NSPersistentContainer
 
