@@ -14,7 +14,7 @@ struct NewTransaction: View {
     @FocusState private var isDescriptionFieldFocused: Bool
     @FocusState private var isAmountFieldFocused: Bool
     @State private var isPresentingDateSheet: Bool = false
-    @State private var selectedDate: Date = Date()
+    @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date()) //today but ignore time
 
     var body: some View {
         NavigationView {

@@ -70,9 +70,12 @@ struct TransactionList: View {
             filtered = Array(items)
         }
         return filtered.sorted {
-            let date1 = $0.transactionTime
-            let date2 = $1.transactionTime
-            return date1 > date2
+            // First, compare by transactionTime
+            if $0.transactionTime != $1.transactionTime {
+                return $0.transactionTime > $1.transactionTime
+            }
+            // If transactionTime is the same, compare by createdAt
+            return $0.createdAt > $1.createdAt
         }
     }
 }
